@@ -29,6 +29,7 @@ const validarParametros = (req, res, next) => {
 // Rota para buscar pratos
 router.get('/', validarParametros, (req, res) => {
   const { name, category, minNota, maxNota, minViews, maxViews } = req.query;
+   
 
   let filteredDishes = [...dishes];
 
@@ -98,7 +99,7 @@ router.get('/', validarParametros, (req, res) => {
   if (filteredDishes.length > 0) {
     res.send(filteredDishes);
   } else {
-    res.status(404).send({ error: "Nenhum prato encontrado com esses filtros" });
+    res.status(404).json({ error: "Nenhum prato encontrado com esses filtros" }); 
   }
 });
 
