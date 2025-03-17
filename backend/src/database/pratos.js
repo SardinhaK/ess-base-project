@@ -2,6 +2,7 @@
 
 let dishes = [
     {
+        img: "https://www.unileverfoodsolutions.com.br/dam/global-ufs/mcos/SLA/calcmenu/recipes/BR-recipes/general/frango-à-parmegiana-com-chips-de-batata-doce/main-header.jpg",
         id: 1,
         name: "Frango à Parmegiana",
         description: "Filé de frango empanado coberto com molho de tomate e queijo derretido.",
@@ -11,6 +12,7 @@ let dishes = [
         views: 1000
     },
     {
+        img: "https://static.itdg.com.br/images/640-440/ec2a5e38702c60bf1ace0b5f1c8e9415/shutterstock-739787011.jpg",
         id: 2,
         name: "Lasanha de Carne",
         description: "Camadas de massa intercaladas com molho de carne e queijo.",
@@ -20,6 +22,7 @@ let dishes = [
         views: 376
     },
     {
+        img: "https://static.itdg.com.br/images/1200-675/3f0787cb6db2f0db10269fc45bd8abee/shutterstock-1078415420.jpg",
         id: 3,
         name: "Salada Caesar",
         description: "Salada clássica com alface, croutons, queijo parmesão e molho Caesar.",
@@ -29,6 +32,7 @@ let dishes = [
         views: 500
     },
     {
+        img: "https://djapa.com.br/wp-content/uploads/2021/09/tipos-de-sushi.jpg",
         id: 4,
         name: "Sushi Variado",
         description: "Seleção de sushi com peixes frescos e arroz temperado.",
@@ -38,6 +42,7 @@ let dishes = [
         views: 253
     },
     {
+        img: "https://www.ogastronomo.com.br/upload/705030785-descubra-os-diferentes-tipos-de-feijoada.jpg",
         id: 5,
         name: "Feijoada",
         description: "Prato tradicional brasileiro com feijão preto e diversas carnes.",
@@ -47,6 +52,7 @@ let dishes = [
         views: 250
     },
     {
+        img: "https://www.cozinhatecnica.com/wp-content/uploads/2021/12/receita-de-risoto-de-cogumelos-500x500.jpg",
         id: 6,
         name: "Risoto de Cogumelos",
         description: "Risoto cremoso preparado com cogumelos frescos.",
@@ -56,6 +62,7 @@ let dishes = [
         views: 145
     },
     {
+        img: "https://guiadacozinha.com.br/wp-content/uploads/2019/10/taco-de-carne-16212.jpg",
         id: 7,
         name: "Tacos de Carne",
         description: "Tortilhas de milho recheadas com carne temperada e acompanhamentos.",
@@ -65,6 +72,7 @@ let dishes = [
         views: 12
     },
     {
+        img: "https://cdn.casaeculinaria.com/wp-content/uploads/2022/10/04101905/Bolo-de-chocolate-2.webp",
         id: 8,
         name: "Bolo de Chocolate",
         description: "Bolo macio e úmido com cobertura de chocolate.",

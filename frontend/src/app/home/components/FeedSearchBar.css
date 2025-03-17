@@ -1,0 +1,57 @@
+/* src/components/FeedSearchBar.css */
+.feed-search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.search-main {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.search-main input[type="text"] {
+  width: 300px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.search-btn {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.search-btn:hover {
+  background-color: #218838;
+}
+
+.filter-toggle-btn {
+  padding: 10px 20px;
+  background-color: #ffc107;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.filter-toggle-btn:hover {
+  background-color: #e0a800;
+}
+
+.search-filters {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.search-filters input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}

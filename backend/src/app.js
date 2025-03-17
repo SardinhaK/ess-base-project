@@ -2,6 +2,10 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
+const cors = require('cors');
+app.use(cors());
+
+
 const PORT = process.env.PORT || 4001;
 
 // Importação das rotas modularizadas
