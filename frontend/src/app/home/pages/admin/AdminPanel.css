@@ -41,14 +41,15 @@
     color: #fff;
   }
   
-  .admin-content {
-    flex: 1;
-    padding: 20px;
-    background: #fff;
-    margin: 0 20px 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
+    .admin-content {
+        flex: 1;
+        padding: 20px;
+        background: #f9f9f9; /* light background to contrast the white box */
+        margin: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+  
   
   .admin-footer {
     background: #333;
