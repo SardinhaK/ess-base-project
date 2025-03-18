@@ -106,8 +106,15 @@ router.put('/:id', (req, res) => {
     }
   
     // Atualiza a categoria
+    const oldName = category.name;
     category.name = name;
     category.description = description || ''; // Mantém a descrição atual se não for fornecida
+
+    dishes.forEach(dish => {
+      if (dish.category.toLowerCase() === oldName.toLowerCase()) {
+        dish.category = name;
+      }
+    });
   
     res.status(200).send(category);
   });
