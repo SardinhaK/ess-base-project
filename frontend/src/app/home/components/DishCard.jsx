@@ -7,15 +7,18 @@ export default function DishCard({ dish }) {
 
   const toggleFavorite = () => {
     setFavorite(!favorite);
-    // Here you might add logic to persist the favorite state.
+    // Optionally, persist the favorite state to the backend/local storage.
   };
-
-  // Replace with actual image URL when available.
-  const placeholderImg = 'https://via.placeholder.com/150';
 
   return (
     <div className="dish-card">
-      <img src={dish.img || 'https://via.placeholder.com/150'} alt={dish.name} className="dish-image" />
+      <div className="dish-image-container">
+        <img
+          src={dish.img || 'https://via.placeholder.com/150'}
+          alt={dish.name}
+          className="dish-image"
+        />
+      </div>
       <div className="dish-info">
         <h3>{dish.name}</h3>
         <p>{dish.description}</p>
@@ -23,7 +26,10 @@ export default function DishCard({ dish }) {
         <p><strong>Rating:</strong> {dish.rating}</p>
         <p><strong>Views:</strong> {dish.views}</p>
       </div>
-      <button className={`favorite-btn ${favorite ? 'favorited' : ''}`} onClick={toggleFavorite}>
+      <button
+        className={`favorite-btn ${favorite ? 'favorited' : ''}`}
+        onClick={toggleFavorite}
+      >
         {favorite ? '♥' : '♡'}
       </button>
     </div>
