@@ -9,59 +9,61 @@ export default function FeedPage() {
   const [dishes, setDishes] = useState([]);
   const [trendingDishes, setTrendingDishes] = useState([]);
 
-  useEffect(() => {
-    // Fetch all dishes for the main grid
+  const fetchDishes = () => {
     fetch('http://localhost:4001/dishes')
       .then(res => res.json())
       .then(data => setDishes(data))
       .catch(error => console.error('Error fetching dishes:', error));
-    
-    // Fetch trending dishes from trending endpoint
+  };
+
+  const fetchTrendingDishes = () => {
     fetch('http://localhost:4001/trending')
       .then(res => res.json())
       .then(data => setTrendingDishes(data))
       .catch(error => console.error('Error fetching trending dishes:', error));
+  };
+
+  useEffect(() => {
+    fetchDishes();
+    fetchTrendingDishes();
   }, []);
 
-  // Update dishes when search returns results
+  // This callback is triggered whenever the user searches in the FeedSearchBar
   const handleSearchResults = (results) => {
+    // Immediately update the feed page with new results
     setDishes(results);
   };
 
   return (
     <div className="feed-page">
       <NavigationBar />
-      <header className="feed-header">
-        <h1>iLoveRU</h1>
-        <p>Descruba todos os pratos do restaurante universitário da Universidade Federal de Pernambuco</p>
-      </header>
-      <div className="feed-search-container">
+      <main className="feed-main">
         <FeedSearchBar onSearch={handleSearchResults} />
-      </div>
-      <section className="dishes-section">
-        <h2>All Dishes</h2>
-        <main className="dishes-grid">
-          {dishes.length > 0 ? (
-            dishes.slice(0, 12).map((dish) => (
-              <DishCard key={dish.id} dish={dish} />
-            ))
-          ) : (
-            <p>No dishes available.</p>
-          )}
-        </main>
-      </section>
-      <section className="trending-section">
-        <h2>Trending</h2>
-        <div className="trending-grid">
-          {trendingDishes.length > 0 ? (
-            trendingDishes.map((dish) => (
-              <DishCard key={dish.id} dish={dish} />
-            ))
-          ) : (
-            <p>No trending dishes.</p>
-          )}
-        </div>
-      </section>
+        <section className="dishes-section">
+          <h2>All Dishes</h2>
+          <div className="dishes-grid">
+            {dishes.length > 0 ? (
+              dishes.slice(0, 12).map((dish) => (
+                <DishCard key={dish.id} dish={dish} />
+              ))
+            ) : (
+              <p>No dishes available.</p>
+            )}
+          </div>
+        </section>
+        <section className="trending-section">
+          <h2>Trending</h2>
+          <div className="trending-grid">
+            {trendingDishes.length > 0 ? (
+              trendingDishes.map((dish) => (
+                <DishCard key={dish.id} dish={dish} />
+              ))
+            ) : (
+              <p>No trending dishes.</p>
+            )}
+          </div>
+        </section>
+      </main>
       <footer className="feed-footer">
         <p>© 2025 University Pub Dish Reviews</p>
       </footer>

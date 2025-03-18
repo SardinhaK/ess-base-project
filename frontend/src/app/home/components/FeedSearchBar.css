@@ -1,57 +1,174 @@
 /* src/components/FeedSearchBar.css */
-.feed-search-form {
+
+/* Container for everything */
+.google-like-search {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  position: relative;
 }
 
-.search-main {
+.google-search-form {
+  width: 100%;
+  max-width: 600px;
   display: flex;
-  gap: 10px;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
-.search-main input[type="text"] {
-  width: 300px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+/* The main search bar (Google-like) */
+.google-search-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #dfe1e5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  padding: 5px 10px;
+  transition: box-shadow 0.2s ease;
+  position: relative;
 }
 
-.search-btn {
-  padding: 10px 20px;
-  background-color: #28a745;
-  color: #fff;
+.google-search-bar:focus-within {
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* The text input inside the search bar */
+.google-search-bar input {
+  flex: 1;
   border: none;
-  border-radius: 5px;
+  outline: none;
+  font-size: 1rem;
+  padding: 8px 0;
+  margin-right: 8px;
+}
+
+/* Gear icon button */
+.gear-btn {
+  background: transparent;
+  border: none;
   cursor: pointer;
+  outline: none;
+  font-size: 1.2rem;
+  color: #5f6368;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.gear-btn:hover {
+  color: #333;
+}
+
+/* Search icon button */
+.search-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  font-size: 1.2rem;
+  color: #5f6368;
+  display: flex;
+  align-items: center;
 }
 
 .search-btn:hover {
-  background-color: #218838;
+  color: #333;
 }
 
-.filter-toggle-btn {
-  padding: 10px 20px;
-  background-color: #ffc107;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+/* Style for icons imported from react-icons */
+.icon {
+  width: 24px;
+  height: 24px;
 }
 
-.filter-toggle-btn:hover {
-  background-color: #e0a800;
-}
-
-.search-filters {
+/* Advanced filters row */
+.advanced-filters {
+  margin-top: 10px;
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
+  width: 100%;
   justify-content: center;
 }
 
-.search-filters input {
+.advanced-filters input {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  font-size: 0.9rem;
+  min-width: 120px;
+}
+
+/* Suggestions dropdown */
+.google-suggestions {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 600px;
+  background: #fff;
+  border: 1px solid #dfe1e5;
+  border-top: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  border-radius: 0 0 24px 24px;
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  max-height: 240px;
+  overflow-y: auto;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.suggestion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 20px;
+  font-size: 0.95rem;
+  color: #202124;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.suggestion-item:hover {
+  background-color: #f8f9fa;
+}
+
+.suggestion-text {
+  flex: 1;
+  margin-right: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* "Excluir" link styling */
+.suggestion-delete {
+  color: #c5221f;
+  font-size: 0.9rem;
+  visibility: hidden;
+  transition: color 0.2s ease;
+}
+
+.suggestion-item:hover .suggestion-delete {
+  visibility: visible;
+}
+
+.suggestion-delete:hover {
+  color: #ff564f;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
