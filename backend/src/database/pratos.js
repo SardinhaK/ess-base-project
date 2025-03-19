@@ -9,7 +9,8 @@ let dishes = [
         category: "Aves",
         ingredients: "frango, farinha de rosca, ovos, molho de tomate, queijo muçarela",
         rating: 4.2,
-        views: 1000
+        views: 1000,
+        publicationDate: "2025-02-16"
     },
     {
         img: "https://static.itdg.com.br/images/640-440/ec2a5e38702c60bf1ace0b5f1c8e9415/shutterstock-739787011.jpg",
@@ -19,7 +20,8 @@ let dishes = [
         category: "Italiana",
         ingredients: "massa para lasanha, carne moída, molho de tomate, queijo muçarela, queijo parmesão",
         rating: 4.5,
-        views: 376
+        views: 376,
+        publicationDate: "2025-02-15"
     },
     {
         img: "https://static.itdg.com.br/images/1200-675/3f0787cb6db2f0db10269fc45bd8abee/shutterstock-1078415420.jpg",
@@ -29,7 +31,8 @@ let dishes = [
         category: "Saladas",
         ingredients: "alface romana, croutons, queijo parmesão, molho Caesar",
         rating: 4.0,
-        views: 500
+        views: 500,
+        publicationDate: "2025-02-14"
     },
     {
         img: "https://djapa.com.br/wp-content/uploads/2021/09/tipos-de-sushi.jpg",
@@ -39,7 +42,8 @@ let dishes = [
         category: "Japonês",
         ingredients: "arroz para sushi, salmão, atum, alga nori, molho de soja",
         rating: 4.8,
-        views: 253
+        views: 253,
+        publicationDate: "2025-02-13"
     },
     {
         img: "https://www.ogastronomo.com.br/upload/705030785-descubra-os-diferentes-tipos-de-feijoada.jpg",
@@ -49,7 +53,8 @@ let dishes = [
         category: "Brasileira",
         ingredients: "feijão preto, linguiça, carne seca, costela de porco, folhas de louro",
         rating: 4.7,
-        views: 250
+        views: 250,
+        publicationDate: "2025-02-12"
     },
     {
         img: "https://www.cozinhatecnica.com/wp-content/uploads/2021/12/receita-de-risoto-de-cogumelos-500x500.jpg",
@@ -59,7 +64,8 @@ let dishes = [
         category: "Italiana",
         ingredients: "arroz arbóreo, cogumelos, caldo de legumes, cebola, queijo parmesão",
         rating: 4.3,
-        views: 145
+        views: 145,
+        publicationDate: "2025-02-08"
     },
     {
         img: "https://guiadacozinha.com.br/wp-content/uploads/2019/10/taco-de-carne-16212.jpg",
@@ -69,7 +75,8 @@ let dishes = [
         category: "Carnes Premium",
         ingredients: "tortilhas de milho, carne moída, alface, tomate, queijo cheddar",
         rating: 4.1,
-        views: 12
+        views: 12,
+        publicationDate: "2025-02-07"
     },
     {
         img: "https://cdn.casaeculinaria.com/wp-content/uploads/2022/10/04101905/Bolo-de-chocolate-2.webp",
@@ -79,7 +86,8 @@ let dishes = [
         category: "Sobremesas",
         ingredients: "farinha de trigo, açúcar, ovos, chocolate em pó, manteiga",
         rating: 4.6,
-        views: 925
+        views: 925,
+        publicationDate: "2025-02-06"
     }
   ];
 
