@@ -1,0 +1,258 @@
+/* SearchBar styles for iLoveRU application */
+
+.search-bar {
+  position: relative;
+  width: 100%;
+}
+
+.search-form {
+  width: 100%;
+}
+
+.search-input-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border: 1px solid var(--gray);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.filter-button,
+.search-button {
+  position: absolute;
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.filter-button {
+  right: 2.5rem;
+}
+
+.search-button {
+  right: 0.75rem;
+}
+
+.filter-button:hover,
+.search-button:hover {
+  color: var(--primary-color);
+}
+
+/* Filters dropdown */
+.filters-dropdown {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  width: 300px;
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-hover);
+  padding: 1rem;
+  z-index: 100;
+}
+
+.filters-dropdown h3 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+  border-bottom: 1px solid var(--gray);
+  padding-bottom: 0.5rem;
+}
+
+.filter-group {
+  margin-bottom: 1rem;
+}
+
+.filter-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.filter-row .filter-group {
+  flex: 1;
+}
+
+.filter-group label {
+  display: block;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+  color: var(--text-light);
+}
+
+.filter-group input,
+.filter-group select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--gray);
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.clear-filters-button,
+.apply-filters-button {
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.clear-filters-button {
+  background-color: var(--white);
+  color: var(--text-light);
+  border: 1px solid var(--gray);
+}
+
+.apply-filters-button {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+}
+
+.clear-filters-button:hover {
+  background-color: var(--gray-light);
+}
+
+.apply-filters-button:hover {
+  background-color: var(--primary-dark);
+}
+
+/* History dropdown */
+.history-dropdown {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-hover);
+  z-index: 100;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--gray);
+}
+
+.history-header h3 {
+  font-size: 0.875rem;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.clear-history-button {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.clear-history-button:hover {
+  color: var(--secondary-color);
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.history-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.history-list li:hover {
+  background-color: var(--gray-light);
+}
+
+.history-item-text {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--text-color);
+}
+
+.history-item-filters {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-left: 0.5rem;
+}
+
+.delete-history-item {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.delete-history-item:hover {
+  color: var(--secondary-color);
+}
+
+/* Checkbox group */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .filters-dropdown {
+    width: 100%;
+    left: 0;
+    right: auto;
+  }
+
+  .filter-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
