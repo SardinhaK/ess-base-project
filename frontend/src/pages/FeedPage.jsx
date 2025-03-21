@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useLocation } from "react-router-dom"
 import Button from "../components/Button"
 import Carousel from "../components/Carousel"
+import FeaturedCarousel from "../components/FeaturedCarousel"
 import DishCard from "../components/DishCard"
 import { dishesApi, trendingApi } from "../utils/api"
 import "../styles/FeedPage.css"
@@ -14,7 +15,9 @@ import "../styles/FeedPage.css"
  */
 const FeedPage = () => {
   const [dishes, setDishes] = useState([])
-  const [trendingDishes, setTrendingDishes] = useState([])
+  const [trendingItems, setTrendingItems] = useState([])
+  const [mostViewedDishes, setMostViewedDishes] = useState([])
+  const [bestRatedDishes, setBestRatedDishes] = useState([])
   const [activeSection, setActiveSection] = useState("trending")
   const [favorites, setFavorites] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -34,6 +37,9 @@ const FeedPage = () => {
         setSearchResults([])
         setError(location.state.searchError)
         setSearchParams(location.state.searchParams)
+      } else if (location.state.selectedNewsId) {
+        // If coming from a trending news item, we don't need to do anything here
+        // The NewsPage component will handle the selection
       }
       // Clear location state to prevent showing the same results after refresh
       window.history.replaceState({}, document.title)
@@ -59,28 +65,46 @@ const FeedPage = () => {
         setDishes([])
       }
 
-      // Fetch trending dishes
+      // Fetch most viewed dishes
+      try {
+        const mostViewedData = await dishesApi.getMostViewed()
+        if (Array.isArray(mostViewedData)) {
+          setMostViewedDishes(mostViewedData)
+        } else {
+          console.error("Most viewed dishes data is not an array:", mostViewedData)
+          setMostViewedDishes([])
+        }
+      } catch (mostViewedError) {
+        console.error("Error fetching most viewed dishes:", mostViewedError)
+        setMostViewedDishes([])
+      }
+
+      // Fetch best rated dishes
+      try {
+        const bestRatedData = await dishesApi.getBestRated()
+        if (Array.isArray(bestRatedData)) {
+          setBestRatedDishes(bestRatedData)
+        } else {
+          console.error("Best rated dishes data is not an array:", bestRatedData)
+          setBestRatedDishes([])
+        }
+      } catch (bestRatedError) {
+        console.error("Error fetching best rated dishes:", bestRatedError)
+        setBestRatedDishes([])
+      }
+
+      // Fetch trending items (dishes and news)
       try {
         const trendingData = await trendingApi.getTrending()
         if (Array.isArray(trendingData)) {
-          setTrendingDishes(trendingData)
+          setTrendingItems(trendingData)
         } else {
-          console.error("Trending dishes data is not an array:", trendingData)
-          // Fallback: filtrar pratos em alta dos pratos já carregados
-          if (Array.isArray(dishesData)) {
-            setTrendingDishes(dishesData.filter((dish) => dish.trending))
-          } else {
-            setTrendingDishes([])
-          }
+          console.error("Trending items data is not an array:", trendingData)
+          setTrendingItems([])
         }
       } catch (trendingError) {
-        console.error("Error fetching trending dishes:", trendingError)
-        // Fallback: filtrar pratos em alta dos pratos já carregados
-        if (Array.isArray(dishesData)) {
-          setTrendingDishes(dishesData.filter((dish) => dish.trending))
-        } else {
-          setTrendingDishes([])
-        }
+        console.error("Error fetching trending items:", trendingError)
+        setTrendingItems([])
       }
 
       // Load favorites from local storage
@@ -103,7 +127,9 @@ const FeedPage = () => {
       console.error("Error fetching dishes:", error)
       setError("Erro ao carregar os pratos. Por favor, tente novamente mais tarde.")
       setDishes([])
-      setTrendingDishes([])
+      setTrendingItems([])
+      setMostViewedDishes([])
+      setBestRatedDishes([])
     } finally {
       setIsLoading(false)
     }
@@ -123,51 +149,12 @@ const FeedPage = () => {
     localStorage.setItem("favorites", JSON.stringify(updatedFavorites))
   }
 
-  // Get most viewed dishes
-  const getMostViewedDishes = () => {
-    if (!Array.isArray(dishes) || dishes.length === 0) return []
-    return [...dishes]
-      .filter((dish) => dish && typeof dish === "object")
-      .sort((a, b) => (b.views || 0) - (a.views || 0))
-      .slice(0, 10)
+  // Check if a dish is in the trending list
+  const isDishTrending = (dishId) => {
+    return trendingItems.some(
+      (item) => item.id === dishId && (item.type === "dish" || (!item.type && item.rating !== undefined)),
+    )
   }
-
-  // Get best rated dishes
-  const getBestRatedDishes = () => {
-    if (!Array.isArray(dishes) || dishes.length === 0) return []
-    return [...dishes]
-      .filter((dish) => dish && typeof dish === "object" && dish.rating !== undefined && dish.rating !== null)
-      .sort((a, b) => b.rating - a.rating)
-      .slice(0, 10)
-  }
-
-  // Get carousel data based on active section
-  const getCarouselData = () => {
-    switch (activeSection) {
-      case "most-viewed":
-        return {
-          items: getMostViewedDishes(),
-          title: "Pratos Mais Vistos",
-          description: "Os pratos mais populares do Restaurante Universitário",
-        }
-      case "best-rated":
-        return {
-          items: getBestRatedDishes(),
-          title: "Melhores Avaliados",
-          description: "Os pratos com as melhores avaliações dos usuários",
-        }
-      case "trending":
-      default:
-        return {
-          items: trendingDishes,
-          title: "Em Alta",
-          description: "Os pratos que estão fazendo sucesso agora",
-        }
-    }
-  }
-
-  // Get carousel data
-  const carouselData = getCarouselData()
 
   // Format search parameters for display
   const formatSearchParams = (params) => {
@@ -191,6 +178,56 @@ const FeedPage = () => {
     setError(null)
   }
 
+  // Render carousel based on active section
+  const renderCarousel = () => {
+    if (activeSection === "trending") {
+      return (
+        <FeaturedCarousel
+          items={trendingItems}
+          title="Em Alta"
+          description="Os itens que estão fazendo sucesso agora"
+          onFavoriteToggle={handleFavoriteToggle}
+          favorites={favorites}
+        />
+      )
+    } else if (activeSection === "most-viewed") {
+      return (
+        <Carousel
+          items={mostViewedDishes}
+          title="Pratos Mais Vistos"
+          description="Os pratos mais populares do Restaurante Universitário"
+          onFavoriteToggle={handleFavoriteToggle}
+          favorites={favorites}
+          itemType="dish"
+          trendingItems={trendingItems}
+        />
+      )
+    } else if (activeSection === "best-rated") {
+      return (
+        <Carousel
+          items={bestRatedDishes}
+          title="Melhores Avaliados"
+          description="Os pratos com as melhores avaliações dos usuários"
+          onFavoriteToggle={handleFavoriteToggle}
+          favorites={favorites}
+          itemType="dish"
+          trendingItems={trendingItems}
+        />
+      )
+    }
+
+    // Default to trending if no match
+    return (
+      <FeaturedCarousel
+        items={trendingItems}
+        title="Em Alta"
+        description="Os itens que estão fazendo sucesso agora"
+        onFavoriteToggle={handleFavoriteToggle}
+        favorites={favorites}
+      />
+    )
+  }
+
   return (
     <div className="feed-page">
       {/* Search Results Banner (if search was performed) */}
@@ -208,7 +245,7 @@ const FeedPage = () => {
             )}
             <p>Parâmetros: {formatSearchParams(searchParams)}</p>
             <button onClick={clearSearchResults} className="clear-search-button">
-              <i className="fas fa-times"></i> Limpar busca
+              <i className="fas fa-times"></i> Retornar
             </button>
           </div>
         </div>
@@ -262,13 +299,7 @@ const FeedPage = () => {
               <span>{error}</span>
             </div>
           ) : (
-            <Carousel
-              items={carouselData.items || []}
-              title={carouselData.title}
-              description={carouselData.description}
-              onFavoriteToggle={handleFavoriteToggle}
-              favorites={favorites}
-            />
+            renderCarousel()
           )}
         </section>
       )}
@@ -306,6 +337,7 @@ const FeedPage = () => {
                     dish={dish}
                     onFavoriteToggle={handleFavoriteToggle}
                     isFavorite={favorites.includes(dish.id)}
+                    isTrending={isDishTrending(dish.id)}
                   />
                 ))
               ) : (
@@ -320,6 +352,7 @@ const FeedPage = () => {
                   dish={dish}
                   onFavoriteToggle={handleFavoriteToggle}
                   isFavorite={favorites.includes(dish.id)}
+                  isTrending={isDishTrending(dish.id)}
                 />
               ))
             ) : (

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useLocation } from "react-router-dom"
 import { newsApi } from "../utils/api"
 import "../styles/NewsPage.css"
 
@@ -12,11 +13,24 @@ const NewsPage = () => {
   const [news, setNews] = useState([])
   const [selectedNews, setSelectedNews] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const location = useLocation()
 
   // Fetch news on component mount
   useEffect(() => {
     fetchNews()
   }, [])
+
+  // Check for selected news in location state
+  useEffect(() => {
+    if (location.state && location.state.selectedNewsId && news.length > 0) {
+      const newsItem = news.find((item) => item.id === location.state.selectedNewsId)
+      if (newsItem) {
+        setSelectedNews(newsItem)
+      }
+      // Clear location state
+      window.history.replaceState({}, document.title)
+    }
+  }, [location.state, news])
 
   // Fetch news from API
   const fetchNews = async () => {
@@ -27,7 +41,17 @@ const NewsPage = () => {
 
       // Select the first news item by default if available
       if (newsData.length > 0 && !selectedNews) {
-        setSelectedNews(newsData[0])
+        // Check if we have a selected news ID from location state
+        if (location.state && location.state.selectedNewsId) {
+          const newsItem = newsData.find((item) => item.id === location.state.selectedNewsId)
+          if (newsItem) {
+            setSelectedNews(newsItem)
+          } else {
+            setSelectedNews(newsData[0])
+          }
+        } else {
+          setSelectedNews(newsData[0])
+        }
       }
     } catch (error) {
       console.error("Error fetching news:", error)
@@ -39,7 +63,9 @@ const NewsPage = () => {
   // Format date for display
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" }
-    return new Date(dateString).toLocaleDateString("pt-BR", options)
+    // Fix the date issue by adding the timezone offset
+    const date = new Date(dateString)
+    return date.toLocaleDateString("pt-BR", options)
   }
 
   // Select a news item

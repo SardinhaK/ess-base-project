@@ -25,6 +25,7 @@ export const checkBackendAvailability = async () => {
 
 // Placeholder image URL
 export const PLACEHOLDER_IMAGE = "https://via.placeholder.com/300x200?text=iLoveRU"
+export const PLACEHOLDER_NEWS = "https://static.vecteezy.com/ti/vetor-gratis/p1/7241519-estilo-de-icone-de-banner-de-noticias-gratis-vetor.jpg"
 
 // Dishes API
 export const dishesApi = {
@@ -118,6 +119,92 @@ export const dishesApi = {
     } catch (error) {
       console.error(`Error deleting dish ${id}:`, error)
       return { error: `Failed to delete dish ${id} (mocked)` }
+    }
+  },
+
+  // Get most viewed dishes
+  getMostViewed: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/most-viewed`)
+      return await response.json()
+    } catch (error) {
+      console.error("Error fetching most viewed dishes:", error)
+      // Retornar dados mockados quando o backend não estiver disponível
+      return [
+        {
+          id: 1,
+          name: "Frango à Parmegiana",
+          description: "Filé de frango empanado coberto com molho de tomate e queijo derretido.",
+          img: PLACEHOLDER_IMAGE,
+          category: "Aves",
+          ingredients: "frango, farinha de rosca, ovos, molho de tomate, queijo muçarela",
+          rating: 4.2,
+          views: 1000,
+        },
+        {
+          id: 2,
+          name: "Lasanha de Berinjela",
+          description: "Camadas de berinjela, molho de tomate e queijo gratinado.",
+          img: PLACEHOLDER_IMAGE,
+          category: "Vegetariano",
+          ingredients: "berinjela, molho de tomate, queijo, manjericão",
+          rating: 4.5,
+          views: 850,
+        },
+        {
+          id: 3,
+          name: "Salada Caesar",
+          description: "Mix de folhas verdes, croutons, frango grelhado e molho caesar.",
+          img: PLACEHOLDER_IMAGE,
+          category: "Saladas",
+          ingredients: "alface, croutons, frango, molho caesar, queijo parmesão",
+          rating: 4.0,
+          views: 600,
+        },
+      ]
+    }
+  },
+
+  // Get best rated dishes
+  getBestRated: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/dishes/best-rated`)
+      return await response.json()
+    } catch (error) {
+      console.error("Error fetching best rated dishes:", error)
+      // Retornar dados mockados quando o backend não estiver disponível
+      return [
+        {
+          id: 4,
+          name: "Risoto de Cogumelos",
+          description: "Arroz arbóreo cremoso com mix de cogumelos frescos e parmesão.",
+          img: PLACEHOLDER_IMAGE,
+          category: "Vegetariano",
+          ingredients: "arroz arbóreo, cogumelos, caldo de legumes, vinho branco, queijo parmesão",
+          rating: 4.8,
+          views: 750,
+        },
+        {
+          id: 5,
+          name: "Salmão Grelhado",
+          description: "Filé de salmão grelhado com ervas finas e limão.",
+          img: PLACEHOLDER_IMAGE,
+          category: "Peixes",
+          ingredients: "salmão, azeite, limão, alecrim, tomilho",
+          rating: 4.7,
+          views: 820,
+        },
+        {
+          id: 6,
+          name: "Ratatouille",
+          description: "Prato tradicional francês com legumes assados em molho de tomate.",
+          img: PLACEHOLDER_IMAGE,
+          category: "Vegetariano",
+          ingredients: "berinjela, abobrinha, pimentão, tomate, cebola, alho",
+          rating: 4.6,
+          views: 580,
+        },
+      ]
     }
   },
 }

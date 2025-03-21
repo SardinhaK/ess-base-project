@@ -2,20 +2,31 @@
 
 import { useState, useRef, useEffect } from "react"
 import DishCard from "./DishCard"
+import NewsCard from "./NewsCard"
 import "../styles/Carousel.css"
 
 /**
  * Carousel component for iLoveRU application
- * Displays a horizontal scrollable list of DishCards
+ * Displays a horizontal scrollable list of DishCards or NewsCards
  *
  * @param {Object} props - Component props
- * @param {Array} props.items - Array of dish items to display
+ * @param {Array} props.items - Array of items to display (dishes or news)
  * @param {string} props.title - Carousel section title
  * @param {string} props.description - Carousel section description
  * @param {function} props.onFavoriteToggle - Function to toggle favorite status
  * @param {Array} props.favorites - Array of favorited dish IDs
+ * @param {string} props.itemType - Type of items to display ("dish", "news", or "mixed")
+ * @param {Array} props.trendingItems - Array of trending items to check against
  */
-const Carousel = ({ items = [], title, description, onFavoriteToggle, favorites = [] }) => {
+const Carousel = ({
+  items = [],
+  title,
+  description,
+  onFavoriteToggle,
+  favorites = [],
+  itemType = "dish",
+  trendingItems = [],
+}) => {
   const carouselRef = useRef(null)
   const [showLeftArrow, setShowLeftArrow] = useState(false)
   const [showRightArrow, setShowRightArrow] = useState(true)
@@ -103,6 +114,61 @@ const Carousel = ({ items = [], title, description, onFavoriteToggle, favorites 
     return favorites.includes(dishId)
   }
 
+  // Check if a dish is in the trending list
+  const isDishTrending = (dishId) => {
+    return trendingItems.some(
+      (item) => item.id === dishId && (item.type === "dish" || (!item.type && item.rating !== undefined)),
+    )
+  }
+
+  // Determine if an item is a dish or news
+  const isItemDish = (item) => {
+    return item.type === "dish" || (!item.type && item.rating !== undefined)
+  }
+
+  // Render appropriate card based on item type
+  const renderItem = (item, index) => {
+    if (itemType === "mixed") {
+      // For mixed type, determine each item individually
+      if (isItemDish(item)) {
+        return (
+          <div key={`dish-${item.id}-${index}`} className="carousel-item">
+            <DishCard
+              dish={item}
+              onFavoriteToggle={onFavoriteToggle}
+              isFavorite={isFavorite(item.id)}
+              isTrending={true} // Items in trending carousel are always trending
+            />
+          </div>
+        )
+      } else {
+        return (
+          <div key={`news-${item.id}-${index}`} className="carousel-item">
+            <NewsCard news={item} trending={true} />
+          </div>
+        )
+      }
+    } else if (itemType === "news") {
+      return (
+        <div key={`news-${item.id}-${index}`} className="carousel-item">
+          <NewsCard news={item} trending={true} />
+        </div>
+      )
+    } else {
+      // Default to dish type
+      return (
+        <div key={`dish-${item.id}-${index}`} className="carousel-item">
+          <DishCard
+            dish={item}
+            onFavoriteToggle={onFavoriteToggle}
+            isFavorite={isFavorite(item.id)}
+            isTrending={isDishTrending(item.id)} // Check if this dish is in the trending list
+          />
+        </div>
+      )
+    }
+  }
+
   return (
     <div className="carousel-section">
       {/* Section Header */}
@@ -132,11 +198,7 @@ const Carousel = ({ items = [], title, description, onFavoriteToggle, favorites 
           onMouseMove={handleMouseMove}
         >
           {items.length > 0 ? (
-            items.map((item, index) => (
-              <div key={`${item.id}-${index}`} className="carousel-item">
-                <DishCard dish={item} onFavoriteToggle={onFavoriteToggle} isFavorite={isFavorite(item.id)} />
-              </div>
-            ))
+            items.map((item, index) => renderItem(item, index))
           ) : (
             <div className="empty-carousel">
               <p>Nenhum item disponível</p>

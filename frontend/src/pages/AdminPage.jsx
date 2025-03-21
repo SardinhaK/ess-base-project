@@ -28,9 +28,6 @@ const AdminPage = () => {
     img: "",
     category: "",
     ingredients: "",
-    rating: 0,
-    views: 0,
-    trending: false,
   })
 
   const [categoryForm, setCategoryForm] = useState({
@@ -52,7 +49,6 @@ const AdminPage = () => {
     subtitle: "",
     body: "",
     publicationDate: new Date().toISOString().split("T")[0],
-    views: 0,
   })
 
   // Edit mode states
@@ -76,10 +72,13 @@ const AdminPage = () => {
         case "dishes":
           const dishesData = await dishesApi.getAll()
           setDishes(dishesData)
-          break
-        case "categories":
+          // Also fetch categories for the dish form
           const categoriesData = await categoriesApi.getAll()
           setCategories(categoriesData)
+          break
+        case "categories":
+          const categoriesOnly = await categoriesApi.getAll()
+          setCategories(categoriesOnly)
           break
         case "users":
           const usersData = await usersApi.getAll()
@@ -111,9 +110,6 @@ const AdminPage = () => {
           img: "",
           category: "",
           ingredients: "",
-          rating: 0,
-          views: 0,
-          trending: false,
         })
         break
       case "categories":
@@ -138,7 +134,6 @@ const AdminPage = () => {
           subtitle: "",
           body: "",
           publicationDate: new Date().toISOString().split("T")[0],
-          views: 0,
         })
         break
       default:
@@ -291,9 +286,6 @@ const AdminPage = () => {
           img: item.img,
           category: item.category,
           ingredients: item.ingredients,
-          rating: item.rating,
-          views: item.views,
-          trending: item.trending,
         })
         break
       case "categories":
@@ -312,13 +304,20 @@ const AdminPage = () => {
         })
         break
       case "news":
+        // Corrigir o problema da data
+        let publicationDate = item.publicationDate
+
+        // Garantir que estamos usando a data correta
+        if (publicationDate.includes("T")) {
+          publicationDate = publicationDate.split("T")[0]
+        }
+
         setNewsForm({
           id: item.id,
           title: item.title,
           subtitle: item.subtitle,
           body: item.body,
-          publicationDate: item.publicationDate.split("T")[0],
-          views: item.views,
+          publicationDate: publicationDate,
         })
         break
       default:
@@ -373,6 +372,15 @@ const AdminPage = () => {
     }
   }
 
+  // Format date for display
+  const formatDate = (dateString) => {
+    // Criar um objeto Date com a data fornecida
+    const date = new Date(dateString)
+
+    // Formatar a data no estilo brasileiro
+    return date.toLocaleDateString("pt-BR")
+  }
+
   // Render dishes tab content
   const renderDishesTab = () => {
     return (
@@ -404,7 +412,7 @@ const AdminPage = () => {
               >
                 <option value="">Selecione uma categoria</option>
                 {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
+                  <option key={category.id} value={category.name}>
                     {category.name}
                   </option>
                 ))}
@@ -445,45 +453,6 @@ const AdminPage = () => {
             />
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="rating">Avaliação</label>
-              <input
-                type="number"
-                id="rating"
-                name="rating"
-                min="0"
-                max="5"
-                step="0.1"
-                value={dishForm.rating}
-                onChange={(e) => handleInputChange(e, "dishes")}
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="views">Visualizações</label>
-              <input
-                type="number"
-                id="views"
-                name="views"
-                min="0"
-                value={dishForm.views}
-                onChange={(e) => handleInputChange(e, "dishes")}
-              />
-            </div>
-          </div>
-
-          <div className="form-group checkbox-group">
-            <input
-              type="checkbox"
-              id="trending"
-              name="trending"
-              checked={dishForm.trending}
-              onChange={(e) => handleInputChange(e, "dishes")}
-            />
-            <label htmlFor="trending">Em Alta</label>
-          </div>
-
           <div className="form-actions">
             <button type="submit" className="btn-primary">
               {editMode.dishes ? "Atualizar Prato" : "Adicionar Prato"}
@@ -512,7 +481,6 @@ const AdminPage = () => {
                   <th>Categoria</th>
                   <th>Avaliação</th>
                   <th>Views</th>
-                  <th>Em Alta</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -524,7 +492,6 @@ const AdminPage = () => {
                       <td>{dish.category}</td>
                       <td>{dish.rating !== undefined && dish.rating !== null ? dish.rating.toFixed(1) : "N/A"}</td>
                       <td>{dish.views}</td>
-                      <td>{dish.trending ? "Sim" : "Não"}</td>
                       <td className="action-buttons">
                         <button className="btn-edit" onClick={() => handleEdit(dish, "dishes")}>
                           <i className="fas fa-edit"></i>
@@ -537,7 +504,7 @@ const AdminPage = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="empty-table">
+                    <td colSpan="5" className="empty-table">
                       Nenhum prato cadastrado
                     </td>
                   </tr>
@@ -687,7 +654,10 @@ const AdminPage = () => {
               value={userForm.senha}
               onChange={(e) => handleInputChange(e, "users")}
               required
+              disabled={editMode.users} // Disable password field in edit mode
+              className={editMode.users ? "disabled-input" : ""}
             />
+            {editMode.users && <small className="form-hint">A senha não pode ser alterada durante a edição.</small>}
           </div>
 
           <div className="form-actions">
@@ -804,19 +774,12 @@ const AdminPage = () => {
                 value={newsForm.publicationDate}
                 onChange={(e) => handleInputChange(e, "news")}
                 required
+                disabled={editMode.news} // Disable date field in edit mode
+                className={editMode.news ? "disabled-input" : ""}
               />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="news-views">Visualizações</label>
-              <input
-                type="number"
-                id="news-views"
-                name="views"
-                min="0"
-                value={newsForm.views}
-                onChange={(e) => handleInputChange(e, "news")}
-              />
+              {editMode.news && (
+                <small className="form-hint">A data de publicação não pode ser alterada durante a edição.</small>
+              )}
             </div>
           </div>
 
@@ -855,7 +818,7 @@ const AdminPage = () => {
                   news.map((item) => (
                     <tr key={item.id}>
                       <td>{item.title}</td>
-                      <td>{new Date(item.publicationDate).toLocaleDateString("pt-BR")}</td>
+                      <td>{formatDate(item.publicationDate)}</td>
                       <td>{item.views}</td>
                       <td className="action-buttons">
                         <button className="btn-edit" onClick={() => handleEdit(item, "news")}>

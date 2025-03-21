@@ -12,8 +12,9 @@ import "../styles/DishCard.css"
  * @param {Object} props.dish - Dish data
  * @param {function} props.onFavoriteToggle - Function to toggle favorite status
  * @param {boolean} props.isFavorite - Whether the dish is favorited
+ * @param {boolean} props.isTrending - Whether the dish is trending (in /trending/em-alta)
  */
-const DishCard = ({ dish, onFavoriteToggle, isFavorite = false }) => {
+const DishCard = ({ dish, onFavoriteToggle, isFavorite = false, isTrending = false }) => {
   const [favorite, setFavorite] = useState(isFavorite)
   const [imageError, setImageError] = useState(false)
 
@@ -79,8 +80,8 @@ const DishCard = ({ dish, onFavoriteToggle, isFavorite = false }) => {
           <i className={favorite ? "fas fa-heart" : "far fa-heart"}></i>
         </button>
 
-        {/* Trending Badge */}
-        {dish.trending && (
+        {/* Trending Badge - Only show if dish is in trending list */}
+        {isTrending && (
           <div className="trending-badge">
             <i className="fas fa-fire"></i> Em Alta
           </div>

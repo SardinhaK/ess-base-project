@@ -64,7 +64,7 @@
 /* Hero Section */
 .hero-section {
   position: relative;
-  height: 500px;
+  height: 350px; /* Reduzido de 500px para 350px */
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url("../assets/background.webp");
   background-size: cover;
@@ -90,9 +90,9 @@
 }
 
 .hero-title {
-  font-size: 3rem;
+  font-size: 2.5rem; /* Reduzido de 3rem para 2.5rem */
   font-weight: 700;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem; /* Reduzido de 2rem para 1.5rem */
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
@@ -178,42 +178,21 @@
 
 @media (max-width: 992px) {
   .hero-section {
-    height: 400px;
+    height: 300px; /* Reduzido de 400px para 300px */
   }
 
   .hero-title {
-    font-size: 2.5rem;
-  }
-
-  .section-header h2 {
-    font-size: 1.75rem;
+    font-size: 2.2rem; /* Ajustado de 2.5rem para 2.2rem */
   }
 }
 
 @media (max-width: 768px) {
-  .dishes-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .hero-section {
-    height: 350px;
+    height: 280px; /* Reduzido de 350px para 280px */
   }
 
   .hero-title {
-    font-size: 2rem;
-  }
-
-  .hero-buttons {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .section-header h2 {
-    font-size: 1.5rem;
-  }
-
-  .search-results-content h2 {
-    font-size: 1.2rem;
+    font-size: 1.8rem; /* Reduzido de 2rem para 1.8rem */
   }
 }
 
@@ -223,12 +202,12 @@
   }
 
   .hero-section {
-    height: 300px;
+    height: 250px; /* Reduzido de 300px para 250px */
   }
 
   .hero-title {
-    font-size: 1.75rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.6rem; /* Reduzido de 1.75rem para 1.6rem */
+    margin-bottom: 1.2rem; /* Adicionado para reduzir ainda mais o espaço */
   }
 }
 

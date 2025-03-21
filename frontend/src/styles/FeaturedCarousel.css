@@ -1,0 +1,121 @@
+/* FeaturedCarousel styles for iLoveRU application */
+
+.featured-carousel-section {
+  margin-bottom: 2rem;
+}
+
+.featured-carousel-container {
+  position: relative;
+  padding: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.featured-item {
+  width: 100%;
+  max-width: 600px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.featured-item.transitioning {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+/* Navigation arrows */
+.featured-nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background-color: var(--white);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  z-index: 10;
+  transition: var(--transition);
+}
+
+.featured-nav-arrow:hover {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+.prev-arrow {
+  left: 20px;
+}
+
+.next-arrow {
+  right: 20px;
+}
+
+/* Navigation dots */
+.featured-nav-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.nav-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--gray);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.nav-dot.active {
+  background-color: var(--primary-color);
+  transform: scale(1.2);
+}
+
+.empty-featured {
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-light);
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .featured-nav-arrow {
+    width: 36px;
+    height: 36px;
+  }
+
+  .prev-arrow {
+    left: 10px;
+  }
+
+  .next-arrow {
+    right: 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .featured-carousel-container {
+    padding: 1rem 0;
+  }
+
+  .featured-nav-arrow {
+    width: 32px;
+    height: 32px;
+  }
+
+  .nav-dot {
+    width: 10px;
+    height: 10px;
+  }
+}
+
