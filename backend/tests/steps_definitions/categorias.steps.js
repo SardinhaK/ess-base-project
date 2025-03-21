@@ -99,6 +99,3 @@ Then('a categoria deve ter os campos atualizados corretamente', function () {
   expect(response.body.name).to.equal('Carnes Premium');
   expect(response.body.description).to.equal('Carnes nobres');
 });
-
-
-

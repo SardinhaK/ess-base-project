@@ -16,8 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^1.7.9",
-    "backend-nodejs-ess": "file:",
     "chai": "^4.5.0",
+    "backend-nodejs-ess": "file:",
     "cors": "^2.8.5",
     "env-cmd": "^10.1.0",
     "express": "^4.21.2",

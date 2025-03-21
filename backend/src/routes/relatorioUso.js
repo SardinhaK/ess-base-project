@@ -1,59 +1,59 @@
-const express = require("express");
-const router = express.Router();
+// const express = require("express");
+// const router = express.Router();
 
-const { dishes } = require('../database/pratos.js');
-const { users } = require('../database/users_list.js');
+// const { dishes } = require('../database/pratos.js');
+// const { users } = require('../database/users_list.js');
 
-// Middleware para verificar se o usuário é administrador
-function verificarAdmin(req, res, next) {
-    const { userId } = req.body; // Pegamos o ID do usuário no body da requisição
-    const user = users.find(u => u.id === parseInt(userId));
+// // Middleware para verificar se o usuário é administrador
+// function verificarAdmin(req, res, next) {
+//     const userId = req.headers['user-id'];
+//     console.log("Middleware: Verificando admin..."); // Depuração
+//     console.log("User ID recebido:", userId); // Depuração
 
-    if (!user || user.role !== "admin") {
-        return res.status(403).json({ message: "Acesso negado. Apenas administradores podem visualizar relatórios." });
-    }
+//     const user = users.find(u => u.id === parseInt(userId));
 
-    next();
-}
+//     if (!user || user.role !== "admin") {
+//         console.log("Acesso negado. Usuário não é admin."); // Depuração
+//         return res.status(403).json({ message: "Acesso negado. Apenas administradores podem visualizar relatórios." });
+//     }
 
-// Rota para obter relatório de uso
-router.get("/", verificarAdmin, (req, res) => {
-    const { filtro, periodo } = req.query;
+//     console.log("Usuário é admin. Acesso permitido."); // Depuração
+//     next();
+// }
 
-    // Gerando estatísticas básicas
-    const totalUsuarios = users.length;
-    const totalPratos = dishes.length;
-    const totalInteracoes = favorites.length;
 
-    // Contagem de favoritos por prato
-    const pratosFavoritados = {};
-    favorites.forEach(fav => {
-        pratosFavoritados[fav.dishId] = (pratosFavoritados[fav.dishId] || 0) + 1;
-    });
+// // Rota para obter relatório de uso
+// router.get("/mais-acessados", verificarAdmin, (req, res) => {
+//     const { filtro, periodo } = req.query;
 
-    // Ordenar os pratos mais favoritados
-    const pratosOrdenados = Object.entries(pratosFavoritados)
-    .sort((a, b) => b[1] - a[1]) // Ordena do mais favoritado para o menos
-    .map(([dishId, count]) => {
-        const prato = dishes.find(d => d.id === parseInt(dishId));
-        return { id: prato.id, nome: prato.name, favoritos: count };
-    });
+//     console.log("Rota: Gerando relatório..."); // Depuração
+//     console.log("Filtro:", filtro); // Depuração
+//     console.log("Período:", periodo); // Depuração
 
-    // Filtro por categoria
-    let relatorio = pratosOrdenados;
-    if (filtro === "categoria") {
-        const categoria = req.query.categoria;
-        relatorio = relatorio.filter(prato => prato.categoria === categoria);
-    }
+//     if (filtro === "categoria") {
+//         console.log("Filtro: categoria"); // Depuração
+//         const relatorioPorCategoria = dishes.reduce((acc, dish) => {
+//             const categoria = dish.category;
+//             if (!acc[categoria]) {
+//                 acc[categoria] = 0;
+//             }
+//             acc[categoria] += dish.views;
+//             return acc;
+//         }, {});
 
-    // Resposta
-    res.json({
-        totalUsuarios,
-        totalPratos,
-        totalInteracoes,
-        pratosMaisFavoritados: relatorio.slice(0, 5), // Pegamos os 5 mais favoritados
-        periodo: periodo || "geral" // Inclui o período solicitado
-    });
-});
+//         const relatorio = Object.entries(relatorioPorCategoria)
+//             .map(([categoria, acessos]) => ({ categoria, acessos }))
+//             .sort((a, b) => b.acessos - a.acessos);
 
-module.exports = router;
+//         console.log("Relatório gerado:", relatorio); // Depuração
+//         res.json({
+//             relatorio,
+//             periodo: periodo || "semanal"
+//         });
+//     } else {
+//         console.log("Filtro não suportado:", filtro); // Depuração
+//         res.status(400).json({ error: "Filtro não suportado" });
+//     }
+// });
+
+// module.exports = router;

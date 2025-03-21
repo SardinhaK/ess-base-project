@@ -19,11 +19,6 @@
   "homepage": "https://github.com/lorenzochaves/ess-base-project#readme",
   "dependencies": {
     "chai": "^4.5.0",
-    "ess-base-project": "file:",
-    "express": "^4.21.2"
-  },
-  "devDependencies": {
-    "@cucumber/cucumber": "^11.2.0",
-    "supertest": "^7.0.0"
+    "ess-base-project": "file:"
   }
 }
