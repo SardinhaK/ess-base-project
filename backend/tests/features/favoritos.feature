@@ -4,9 +4,9 @@ Feature: Favoritos
     So that eu possa acessar rapidamente os pratos que mais gosto ou desejo consumir novamente.
 
 Scenario: Adicionar prato à lista de favoritos - GUI
-    Given o usuário "João Silva" está autenticado no sistema  
+    Given o usuário "Rafael Almeida" está autenticado no sistema  
     And o prato "Frango à Parmegiana" está listado na página "Feed"  
-    And o prato "Frango à Parmegiana" não está na lista de favoritos do usuário "João Silva"
+    And o prato "Frango à Parmegiana" não está na lista de favoritos do usuário "Rafael Almeida"
     When o usuário clica em "🤍" associado ao prato "Frango à Parmegiana"  
     Then o prato "Frango à Parmegiana" é adicionado à lista de favoritos do usuário
     And o sistema exibe o ícone "❤️" no prato  

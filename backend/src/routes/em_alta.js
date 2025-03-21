@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { dishes } = require('../database/pratos_aux.js'); // Pratos populares
+const { dishes } = require('../database/pratos.js'); // Pratos populares
 const { categories } = require('../database/categorias_aux.js'); // Categorias de pratos
 const { news } = require('../database/noticias_aux.js'); // Notícias populares
 
