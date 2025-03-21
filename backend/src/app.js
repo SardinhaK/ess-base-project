@@ -17,7 +17,6 @@ const favoritesRouter = require('./routes/favoritos.js');
 const usageReportRoutes = require('./routes/relatorioUso.js');
 
 //const reviewsRouter = require('./src/routes/reviews');
-//const relatoriosRoutes = require("./routes/relatorioUso"); // Importando a rota de relatórios
 
 // Montagem das rotas
 app.use('/dishes', pratosRouter);
@@ -32,7 +31,6 @@ app.use('/favorites', favoritesRouter);
 app.use("/usage-report", usageReportRoutes);
 
 //app.use('/reviews', reviewsRouter);
-//app.use("/relatorios", relatoriosRoutes); // Adicionando a rota ao servidor
 
 module.exports = app
 // Inicialização do servidor

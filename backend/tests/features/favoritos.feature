@@ -30,13 +30,6 @@ Scenario: Visualizar lista de pratos favoritos
         | Lasanha de Carne    |
         | Salada Caesar       |
 
-# Scenario: Adicionar prato duplicado aos favoritos
-#     Given o usuário "Ana Costa" está autenticado no sistema
-#     And o prato "Sushi Variado" está na lista de favoritos do usuário "Ana Costa"
-#     When o usuário clica novamente no ícone "🤍" associado ao prato "Sushi Variado"
-#     Then o sistema não permite a duplicação
-#     And uma mensagem "Este prato já está nos seus favoritos" é exibida
-
 Scenario: Limpar todos os pratos da lista de favoritos
     Given o usuário "Ana Costa" está autenticado no sistema
     And a lista de favoritos do usuário contém os seguintes pratos:
