@@ -106,6 +106,32 @@
   color: var(--text-color);
 }
 
+/* Adicione este estilo para campos obrigatórios */
+.form-group label::after {
+  content: "";
+  color: var(--secondary-color);
+}
+
+/* Adicione asterisco apenas para campos obrigatórios específicos */
+.form-group label[for="name"]::after,
+.form-group label[for="category"]::after,
+.form-group label[for="ingredients"]::after,
+.form-group label[for="category-name"]::after,
+.form-group label[for="news-title"]::after,
+.form-group label[for="news-subtitle"]::after,
+.form-group label[for="news-body"]::after,
+.form-group label[for="user-nome"]::after,
+.form-group label[for="user-login"]::after,
+.form-group label[for="user-senha"]::after {
+  content: " *";
+  color: var(--secondary-color);
+}
+
+.form-group label[for="img"]::after,
+.form-group label[for="description"]::after {
+  content: "";
+}
+
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -135,6 +161,18 @@
   font-size: 0.75rem;
   color: var(--text-light);
   margin-top: 0.25rem;
+}
+
+/* Estilo para mensagens de erro no formulário */
+.form-error {
+  color: var(--secondary-color);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* Estilo para campos com erro */
+.input-error {
+  border-color: var(--secondary-color) !important;
 }
 
 .checkbox-group {

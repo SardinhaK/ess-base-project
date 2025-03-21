@@ -1,405 +1,622 @@
 "use client"
 
-import { useState, useEffect, useContext } from "react"
-import { dishesApi, categoriesApi, usersApi, newsApi } from "../utils/api"
+import { useState, useEffect, useContext, useCallback } from "react"
 import { AlertContext } from "../App"
+import Button from "../components/Button"
+import { dishesApi, categoriesApi, newsApi, usersApi, reportsApi } from "../utils/api"
 import "../styles/AdminPage.css"
+import "../styles/ReportsPage.css"
+
+// Adicionar a função renderReportsTab diretamente no arquivo AdminPage.jsx
+// Adicionar antes da função principal AdminPage
+const renderReportsTab = ({ activeTab, showAlert }) => {
+  const [dashboardStats, setDashboardStats] = useState({
+    totalDishes: 0,
+    totalCategories: 0,
+    totalUsers: 0,
+    totalNews: 0,
+    totalViews: 0,
+    averageRating: 0,
+    totalFavorites: 0,
+  })
+  const [mostViewedDishes, setMostViewedDishes] = useState([])
+  const [bestRatedDishes, setBestRatedDishes] = useState([])
+  const [categoryDistribution, setCategoryDistribution] = useState([])
+  const [ratingDistribution, setRatingDistribution] = useState([])
+  const [monthlyViews, setMonthlyViews] = useState([])
+  const [mostFavoritedDishes, setMostFavoritedDishes] = useState([])
+  const [isReportsLoading, setIsReportsLoading] = useState(false)
+
+  const loadReportsData = useCallback(async () => {
+    setIsReportsLoading(true)
+    try {
+      // Carregar estatísticas do dashboard
+      const stats = await reportsApi.getDashboardStats()
+      setDashboardStats(stats)
+
+      // Carregar pratos mais visualizados
+      const mostViewed = await reportsApi.getMostViewedStats()
+      setMostViewedDishes(mostViewed)
+
+      // Carregar pratos melhor avaliados
+      const bestRated = await reportsApi.getBestRatedStats()
+      setBestRatedDishes(bestRated)
+
+      // Carregar distribuição por categoria
+      const categoryDist = await reportsApi.getCategoryDistribution()
+      setCategoryDistribution(categoryDist)
+
+      // Carregar distribuição de avaliações
+      const ratingDist = await reportsApi.getRatingDistribution()
+      setRatingDistribution(ratingDist)
+
+      // Carregar visualizações mensais
+      const monthlyViewsData = await reportsApi.getMonthlyViews()
+      setMonthlyViews(monthlyViewsData)
+
+      // Carregar pratos mais favoritados
+      const mostFavoritedDishes = await reportsApi.getMostFavoritedDishes()
+      setMostFavoritedDishes(mostFavoritedDishes)
+    } catch (error) {
+      console.error("Erro ao carregar dados de relatórios:", error)
+      showAlert("error", "Erro ao carregar dados de relatórios")
+    } finally {
+      setIsReportsLoading(false)
+    }
+  }, [showAlert])
+
+  // Carregar dados de relatórios
+  useEffect(() => {
+    if (activeTab === "reports") {
+      loadReportsData()
+    }
+  }, [activeTab, loadReportsData])
+
+  // Renderizar gráfico de barras para visualizações mensais
+  const renderMonthlyViewsChart = () => {
+    const maxViews = Math.max(...monthlyViews.map((item) => item.views))
+
+    return (
+      <div className="bar-chart">
+        {monthlyViews.map((item, index) => {
+          const height = (item.views / maxViews) * 100
+          return (
+            <div key={index} className="bar" style={{ height: `${height}%` }}>
+              <div className="bar-value">{item.views}</div>
+              <div className="bar-label">{item.month}</div>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
+  // Renderizar gráfico de barras para distribuição de avaliações
+  const renderRatingDistributionChart = () => {
+    const maxCount = Math.max(...ratingDistribution.map((item) => item.count))
+
+    return (
+      <div className="bar-chart">
+        {ratingDistribution.map((item, index) => {
+          const height = (item.count / maxCount) * 100
+          return (
+            <div key={index} className="bar" style={{ height: `${height}%` }}>
+              <div className="bar-value">{item.count}</div>
+              <div className="bar-label">{item.rating} ★</div>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
+  // Renderizar gráfico de pizza para distribuição por categoria
+  const renderCategoryDistributionChart = () => {
+    const totalDishes = categoryDistribution.reduce((sum, item) => sum + item.count, 0)
+    let startAngle = 0
+
+    const colors = [
+      "#008489", // primary
+      "#ff5a5f", // secondary
+      "#ffb400", // yellow
+      "#00a699", // teal
+      "#fc642d", // orange
+      "#7b0051", // purple
+      "#00d1c1", // light teal
+      "#ffaa91", // light orange
+      "#b4a76c", // olive
+      "#6cb4a7", // sage
+    ]
+
+    return (
+      <div className="pie-chart">
+        {categoryDistribution.map((item, index) => {
+          const percentage = (item.count / totalDishes) * 100
+          const angle = (percentage / 100) * 360
+          const rotate = startAngle
+          startAngle += angle
+
+          return (
+            <div
+              key={index}
+              className="pie-segment"
+              style={{
+                backgroundColor: colors[index % colors.length],
+                transform: `rotate(${rotate}deg)`,
+                clipPath: `polygon(50% 50%, 100% 0, ${angle < 180 ? "100% 100%" : "0 100%"}, ${angle < 270 ? "0 0" : "100% 0"})`,
+              }}
+            />
+          )
+        })}
+
+        <div className="pie-legend">
+          {categoryDistribution.map((item, index) => (
+            <div key={index} className="legend-item">
+              <div className="legend-color" style={{ backgroundColor: colors[index % colors.length] }} />
+              <span className="legend-label">{item.category}</span>
+              <span className="legend-value">{item.count}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="admin-tab-content">
+      <h2>Relatórios e Estatísticas</h2>
+
+      {isReportsLoading ? (
+        <div className="loading-spinner">
+          <i className="fas fa-spinner fa-spin"></i>
+          <span>Carregando relatórios...</span>
+        </div>
+      ) : (
+        <div className="reports-container">
+          {/* Cards de estatísticas */}
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-icon">
+                <i className="fas fa-utensils"></i>
+              </div>
+              <div className="stat-value">{dashboardStats.totalDishes}</div>
+              <div className="stat-label">Pratos Cadastrados</div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon">
+                <i className="fas fa-eye"></i>
+              </div>
+              <div className="stat-value">{dashboardStats.totalViews.toLocaleString()}</div>
+              <div className="stat-label">Visualizações Totais</div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon">
+                <i className="fas fa-star"></i>
+              </div>
+              <div className="stat-value">{dashboardStats.averageRating.toFixed(1)}</div>
+              <div className="stat-label">Avaliação Média</div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon">
+                <i className="fas fa-heart"></i>
+              </div>
+              <div className="stat-value">{dashboardStats.totalFavorites}</div>
+              <div className="stat-label">Favoritos Totais</div>
+            </div>
+          </div>
+
+          {/* Gráficos */}
+          <div className="charts-grid">
+            <div className="chart-card">
+              <div className="chart-header">
+                <h3 className="chart-title">Visualizações Mensais</h3>
+                <p className="chart-description">Número de visualizações por mês</p>
+              </div>
+              <div className="chart-container">{renderMonthlyViewsChart()}</div>
+            </div>
+
+            <div className="chart-card">
+              <div className="chart-header">
+                <h3 className="chart-title">Distribuição de Avaliações</h3>
+                <p className="chart-description">Número de pratos por avaliação</p>
+              </div>
+              <div className="chart-container">{renderRatingDistributionChart()}</div>
+            </div>
+
+            <div className="chart-card">
+              <div className="chart-header">
+                <h3 className="chart-title">Distribuição por Categoria</h3>
+                <p className="chart-description">Número de pratos por categoria</p>
+              </div>
+              <div className="chart-container">{renderCategoryDistributionChart()}</div>
+            </div>
+          </div>
+
+          {/* Tabelas */}
+          <div className="table-card">
+            <div className="table-header">
+              <h3 className="table-title">Pratos Mais Visualizados</h3>
+              <p className="table-description">Os 5 pratos com mais visualizações</p>
+            </div>
+            <table className="reports-table">
+              <thead>
+                <tr>
+                  <th>Posição</th>
+                  <th>Nome do Prato</th>
+                  <th>Visualizações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mostViewedDishes.map((dish, index) => (
+                  <tr key={dish.id}>
+                    <td>{index + 1}</td>
+                    <td>{dish.name}</td>
+                    <td>{dish.views.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="table-card">
+            <div className="table-header">
+              <h3 className="table-title">Pratos Melhor Avaliados</h3>
+              <p className="table-description">Os 5 pratos com as melhores avaliações</p>
+            </div>
+            <table className="reports-table">
+              <thead>
+                <tr>
+                  <th>Posição</th>
+                  <th>Nome do Prato</th>
+                  <th>Avaliação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bestRatedDishes.map((dish, index) => (
+                  <tr key={dish.id}>
+                    <td>{index + 1}</td>
+                    <td>{dish.name}</td>
+                    <td>{dish.rating.toFixed(1)} ★</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="table-card">
+            <div className="table-header">
+              <h3 className="table-title">Pratos Mais Favoritados</h3>
+              <p className="table-description">Os 5 pratos mais adicionados aos favoritos</p>
+            </div>
+            <table className="reports-table">
+              <thead>
+                <tr>
+                  <th>Posição</th>
+                  <th>Nome do Prato</th>
+                  <th>Favoritos</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mostFavoritedDishes.map((dish, index) => (
+                  <tr key={dish.id}>
+                    <td>{index + 1}</td>
+                    <td>{dish.name}</td>
+                    <td>{dish.favorites}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 /**
  * AdminPage component for iLoveRU application
- * Admin dashboard for managing dishes, categories, users, and news
+ * Provides admin functionalities to manage dishes, categories, news, and users
  */
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("dishes")
   const [dishes, setDishes] = useState([])
   const [categories, setCategories] = useState([])
-  const [users, setUsers] = useState([])
   const [news, setNews] = useState([])
+  const [users, setUsers] = useState([])
+  const [isEditing, setIsEditing] = useState(false)
+  const [editItemId, setEditItemId] = useState(null)
+  const [formValues, setFormValues] = useState({})
+  const [formErrors, setFormErrors] = useState({})
   const [isLoading, setIsLoading] = useState(true)
-
-  // Use the global alert context
-  const { showAlert, clearAlert } = useContext(AlertContext)
-
-  // Form states
-  const [dishForm, setDishForm] = useState({
-    id: "",
-    name: "",
-    description: "",
-    img: "",
-    category: "",
-    ingredients: "",
+  const { showAlert } = useContext(AlertContext)
+  const [dashboardStats, setDashboardStats] = useState({
+    totalDishes: 0,
+    totalCategories: 0,
+    totalUsers: 0,
+    totalNews: 0,
+    totalViews: 0,
+    averageRating: 0,
+    totalFavorites: 0,
   })
+  const [mostViewedDishes, setMostViewedDishes] = useState([])
+  const [bestRatedDishes, setBestRatedDishes] = useState([])
+  const [categoryDistribution, setCategoryDistribution] = useState([])
+  const [ratingDistribution, setRatingDistribution] = useState([])
+  const [monthlyViews, setMonthlyViews] = useState([])
+  const [mostFavoritedDishes, setMostFavoritedDishes] = useState([])
+  const [isReportsLoading, setIsReportsLoading] = useState(false)
 
-  const [categoryForm, setCategoryForm] = useState({
-    id: "",
-    name: "",
-    description: "",
-  })
-
-  const [userForm, setUserForm] = useState({
-    id: "",
-    nome: "",
-    login: "",
-    senha: "",
-  })
-
-  const [newsForm, setNewsForm] = useState({
-    id: "",
-    title: "",
-    subtitle: "",
-    body: "",
-    publicationDate: new Date().toISOString().split("T")[0],
-  })
-
-  // Edit mode states
-  const [editMode, setEditMode] = useState({
-    dishes: false,
-    categories: false,
-    users: false,
-    news: false,
-  })
-
-  // Fetch data on component mount and tab change
+  // Fetch data on component mount
   useEffect(() => {
-    fetchData(activeTab)
-  }, [activeTab])
+    fetchData()
+  }, [])
 
-  // Fetch data based on active tab
-  const fetchData = async (tab) => {
+  // Fetch dishes, categories, news, and users from API
+  const fetchData = async () => {
     setIsLoading(true)
     try {
-      switch (tab) {
-        case "dishes":
-          const dishesData = await dishesApi.getAll()
-          setDishes(dishesData)
-          // Also fetch categories for the dish form
-          const categoriesData = await categoriesApi.getAll()
-          setCategories(categoriesData)
-          break
-        case "categories":
-          const categoriesOnly = await categoriesApi.getAll()
-          setCategories(categoriesOnly)
-          break
-        case "users":
-          const usersData = await usersApi.getAll()
-          setUsers(usersData)
-          break
-        case "news":
-          const newsData = await newsApi.getAll()
-          setNews(newsData)
-          break
-        default:
-          break
+      const dishesData = await dishesApi.getAll()
+      setDishes(dishesData)
+
+      const categoriesData = await categoriesApi.getAll()
+      setCategories(categoriesData)
+
+      const newsData = await newsApi.getAll()
+      setNews(newsData)
+
+      const usersData = await usersApi.getAll()
+      setUsers(usersData)
+
+      // Load reports data if the active tab is 'reports'
+      if (activeTab === "reports") {
+        await loadReportsData()
       }
     } catch (error) {
-      console.error(`Error fetching ${tab}:`, error)
-      showAlert("error", `Erro ao carregar ${tab}: ${error.message}`)
+      console.error("Error fetching data:", error)
+      showAlert("error", "Erro ao carregar os dados. Por favor, tente novamente mais tarde.")
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Reset form based on active tab
-  const resetForm = (tab) => {
-    switch (tab) {
-      case "dishes":
-        setDishForm({
-          id: "",
-          name: "",
-          description: "",
-          img: "",
-          category: "",
-          ingredients: "",
-        })
-        break
-      case "categories":
-        setCategoryForm({
-          id: "",
-          name: "",
-          description: "",
-        })
-        break
-      case "users":
-        setUserForm({
-          id: "",
-          nome: "",
-          login: "",
-          senha: "",
-        })
-        break
-      case "news":
-        setNewsForm({
-          id: "",
-          title: "",
-          subtitle: "",
-          body: "",
-          publicationDate: new Date().toISOString().split("T")[0],
-        })
-        break
-      default:
-        break
-    }
-
-    setEditMode({
-      ...editMode,
-      [tab]: false,
-    })
-  }
-
-  // Handle form input change
-  const handleInputChange = (e, formType) => {
-    const { name, value, type, checked } = e.target
-    const inputValue = type === "checkbox" ? checked : value
-
-    switch (formType) {
-      case "dishes":
-        setDishForm({
-          ...dishForm,
-          [name]: inputValue,
-        })
-        break
-      case "categories":
-        setCategoryForm({
-          ...categoryForm,
-          [name]: inputValue,
-        })
-        break
-      case "users":
-        setUserForm({
-          ...userForm,
-          [name]: inputValue,
-        })
-        break
-      case "news":
-        setNewsForm({
-          ...newsForm,
-          [name]: inputValue,
-        })
-        break
-      default:
-        break
-    }
-  }
-
-  // Validate category form
-  const validateCategoryForm = () => {
-    if (!categoryForm.name) {
-      showAlert("error", "Nome da categoria é obrigatório")
-      return false
-    }
-
-    if (categoryForm.name.length < 2) {
-      showAlert("error", "Nome deve ter pelo menos 2 caracteres")
-      return false
-    }
-
-    if (categoryForm.name.length > 50) {
-      showAlert("error", "Nome não pode ter mais que 50 caracteres")
-      return false
-    }
-
-    if (categoryForm.description && categoryForm.description.length > 200) {
-      showAlert("error", "Descrição não pode ter mais que 200 caracteres")
-      return false
-    }
-
-    return true
-  }
-
-  // Handle form submission
-  const handleSubmit = async (e, formType) => {
-    e.preventDefault()
-    clearAlert()
-
+  const loadReportsData = useCallback(async () => {
+    setIsReportsLoading(true)
     try {
-      switch (formType) {
+      // Carregar estatísticas do dashboard
+      const stats = await reportsApi.getDashboardStats()
+      setDashboardStats(stats)
+
+      // Carregar pratos mais visualizados
+      const mostViewed = await reportsApi.getMostViewedStats()
+      setMostViewedDishes(mostViewed)
+
+      // Carregar pratos melhor avaliados
+      const bestRated = await reportsApi.getBestRatedStats()
+      setBestRatedDishes(bestRated)
+
+      // Carregar distribuição por categoria
+      const categoryDist = await reportsApi.getCategoryDistribution()
+      setCategoryDistribution(categoryDist)
+
+      // Carregar distribuição de avaliações
+      const ratingDist = await reportsApi.getRatingDistribution()
+      setRatingDistribution(ratingDist)
+
+      // Carregar visualizações mensais
+      const monthlyViewsData = await reportsApi.getMonthlyViews()
+      setMonthlyViews(monthlyViewsData)
+
+      // Carregar pratos mais favoritados
+      const mostFavoritedDishes = await reportsApi.getMostFavoritedDishes()
+      setMostFavoritedDishes(mostFavoritedDishes)
+    } catch (error) {
+      console.error("Erro ao carregar dados de relatórios:", error)
+      showAlert("error", "Erro ao carregar dados de relatórios")
+    } finally {
+      setIsReportsLoading(false)
+    }
+  }, [showAlert])
+
+  // Handle tab change
+  const handleTabChange = (tab) => {
+    setActiveTab(tab)
+    setIsEditing(false)
+    setEditItemId(null)
+    setFormValues({})
+    setFormErrors({})
+
+    // Load reports data when the 'reports' tab is selected
+    if (tab === "reports") {
+      loadReportsData()
+    }
+  }
+
+  // Handle edit item
+  const handleEditItem = (item, tab) => {
+    setIsEditing(true)
+    setEditItemId(item.id)
+    setFormValues(item)
+    setActiveTab(tab)
+    setFormErrors({})
+  }
+
+  // Handle delete item
+  const handleDeleteItem = async (id, tab) => {
+    try {
+      let result
+      switch (tab) {
         case "dishes":
-          if (editMode.dishes) {
-            await dishesApi.update(dishForm.id, dishForm)
-            showAlert("success", "Prato atualizado com sucesso!")
-          } else {
-            await dishesApi.create(dishForm)
-            showAlert("success", "Prato adicionado com sucesso!")
-          }
+          result = await dishesApi.delete(id)
           break
         case "categories":
-          // Validate category form
-          if (!validateCategoryForm()) {
-            return
-          }
-
-          if (editMode.categories) {
-            const result = await categoriesApi.update(categoryForm.id, categoryForm)
-            if (result.error) {
-              showAlert("error", result.error)
-              return
-            }
-            showAlert("success", "Categoria atualizada com sucesso!")
-          } else {
-            const result = await categoriesApi.create(categoryForm)
-            if (result.error) {
-              showAlert("error", result.error)
-              return
-            }
-            showAlert("success", "Categoria adicionada com sucesso!")
-          }
-          break
-        case "users":
-          if (editMode.users) {
-            await usersApi.update(userForm.id, userForm)
-            showAlert("success", "Usuário atualizado com sucesso!")
-          } else {
-            await usersApi.create(userForm)
-            showAlert("success", "Usuário adicionado com sucesso!")
-          }
+          result = await categoriesApi.delete(id)
           break
         case "news":
-          if (editMode.news) {
-            await newsApi.update(newsForm.id, newsForm)
-            showAlert("success", "Notícia atualizada com sucesso!")
-          } else {
-            await newsApi.create(newsForm)
-            showAlert("success", "Notícia adicionada com sucesso!")
-          }
+          result = await newsApi.delete(id)
+          break
+        case "users":
+          result = await usersApi.delete(id)
           break
         default:
-          break
+          showAlert("error", "Aba inválida")
+          return
       }
 
-      // Refresh data and reset form
-      fetchData(formType)
-      resetForm(formType)
+      if (result.error) {
+        showAlert("error", result.error)
+      } else {
+        showAlert("success", "Item excluído com sucesso")
+        fetchData()
+      }
     } catch (error) {
-      console.error(`Error submitting ${formType} form:`, error)
-      showAlert("error", `Erro ao salvar: ${error.message}`)
+      console.error("Error deleting item:", error)
+      showAlert("error", "Erro ao excluir o item. Por favor, tente novamente mais tarde.")
     }
   }
 
-  // Handle edit button click
-  const handleEdit = (item, formType) => {
-    switch (formType) {
+  // Handle form change
+  const handleFormChange = (e) => {
+    const { name, value, type, checked } = e.target
+    setFormValues((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }))
+  }
+
+  // Validate form values
+  const validateForm = (values, tab) => {
+    const errors = {}
+
+    switch (tab) {
       case "dishes":
-        setDishForm({
-          id: item.id,
-          name: item.name,
-          description: item.description,
-          img: item.img,
-          category: item.category,
-          ingredients: item.ingredients,
-        })
+        if (!values.name) errors.name = "Nome é obrigatório"
+        if (!values.category) errors.category = "Categoria é obrigatória"
+        if (!values.ingredients) errors.ingredients = "Ingredientes são obrigatórios"
         break
       case "categories":
-        setCategoryForm({
-          id: item.id,
-          name: item.name,
-          description: item.description,
-        })
-        break
-      case "users":
-        setUserForm({
-          id: item.id,
-          nome: item.nome,
-          login: item.login,
-          senha: item.senha,
-        })
+        if (!values.name) errors.name = "Nome é obrigatório"
         break
       case "news":
-        // Corrigir o problema da data
-        let publicationDate = item.publicationDate
-
-        // Garantir que estamos usando a data correta
-        if (publicationDate.includes("T")) {
-          publicationDate = publicationDate.split("T")[0]
-        }
-
-        setNewsForm({
-          id: item.id,
-          title: item.title,
-          subtitle: item.subtitle,
-          body: item.body,
-          publicationDate: publicationDate,
-        })
+        if (!values.title) errors.title = "Título é obrigatório"
+        if (!values.subtitle) errors.subtitle = "Subtítulo é obrigatório"
+        if (!values.body) errors.body = "Corpo da notícia é obrigatório"
+        break
+      case "users":
+        if (!values.nome) errors.nome = "Nome é obrigatório"
+        if (!values.login) errors.login = "Login é obrigatório"
+        if (!values.senha) errors.senha = "Senha é obrigatória"
         break
       default:
         break
     }
 
-    setEditMode({
-      ...editMode,
-      [formType]: true,
-    })
+    return errors
   }
 
-  // Handle delete button click
-  const handleDelete = async (id, formType) => {
-    if (!window.confirm(`Tem certeza que deseja excluir este item?`)) {
+  // Handle form submit
+  const handleFormSubmit = async (e) => {
+    e.preventDefault()
+
+    const errors = validateForm(formValues, activeTab)
+    setFormErrors(errors)
+
+    if (Object.keys(errors).length > 0) {
+      showAlert("error", "Por favor, corrija os erros no formulário.")
       return
     }
 
-    clearAlert()
-
     try {
-      switch (formType) {
-        case "dishes":
-          await dishesApi.delete(id)
-          showAlert("success", "Prato excluído com sucesso!")
-          break
-        case "categories":
-          const result = await categoriesApi.delete(id)
-          if (result.error) {
-            showAlert("error", result.error)
+      let result
+      if (isEditing) {
+        // Update existing item
+        switch (activeTab) {
+          case "dishes":
+            result = await dishesApi.update(editItemId, formValues)
+            break
+          case "categories":
+            result = await categoriesApi.update(editItemId, formValues)
+            break
+          case "news":
+            result = await newsApi.update(editItemId, formValues)
+            break
+          case "users":
+            result = await usersApi.update(editItemId, formValues)
+            break
+          default:
+            showAlert("error", "Aba inválida")
             return
-          }
-          showAlert("success", "Categoria excluída com sucesso!")
-          break
-        case "users":
-          await usersApi.delete(id)
-          showAlert("success", "Usuário excluído com sucesso!")
-          break
-        case "news":
-          await newsApi.delete(id)
-          showAlert("success", "Notícia excluída com sucesso!")
-          break
-        default:
-          break
+        }
+      } else {
+        // Create new item
+        switch (activeTab) {
+          case "dishes":
+            result = await dishesApi.create(formValues)
+            break
+          case "categories":
+            result = await categoriesApi.create(formValues)
+            break
+          case "news":
+            result = await newsApi.create(formValues)
+            break
+          case "users":
+            result = await usersApi.create(formValues)
+            break
+          default:
+            showAlert("error", "Aba inválida")
+            return
+        }
       }
 
-      // Refresh data
-      fetchData(formType)
+      if (result.error) {
+        showAlert("error", result.error)
+      } else {
+        showAlert("success", "Item salvo com sucesso")
+        fetchData()
+        setIsEditing(false)
+        setEditItemId(null)
+        setFormValues({})
+      }
     } catch (error) {
-      console.error(`Error deleting ${formType} item:`, error)
-      showAlert("error", `Erro ao excluir: ${error.message}`)
+      console.error("Error saving item:", error)
+      showAlert("error", "Erro ao salvar o item. Por favor, tente novamente mais tarde.")
     }
   }
 
-  // Format date for display
-  const formatDate = (dateString) => {
-    // Criar um objeto Date com a data fornecida
-    const date = new Date(dateString)
-
-    // Formatar a data no estilo brasileiro
-    return date.toLocaleDateString("pt-BR")
-  }
-
-  // Render dishes tab content
-  const renderDishesTab = () => {
-    return (
-      <div className="admin-tab-content">
-        <h2>Gerenciar Pratos</h2>
-
-        {/* Dishes Form */}
-        <form className="admin-form" onSubmit={(e) => handleSubmit(e, "dishes")}>
-          <div className="form-row">
+  // Render form
+  const renderForm = () => {
+    switch (activeTab) {
+      case "dishes":
+        return (
+          <form className="admin-form" onSubmit={handleFormSubmit}>
             <div className="form-group">
               <label htmlFor="name">Nome</label>
               <input
                 type="text"
                 id="name"
                 name="name"
-                value={dishForm.name}
-                onChange={(e) => handleInputChange(e, "dishes")}
-                required
+                value={formValues.name || ""}
+                onChange={handleFormChange}
+                className={formErrors.name ? "input-error" : ""}
               />
+              {formErrors.name && <span className="form-error">{formErrors.name}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="description">Descrição</label>
+              <textarea
+                id="description"
+                name="description"
+                value={formValues.description || ""}
+                onChange={handleFormChange}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="img">URL da Imagem</label>
+              <input type="text" id="img" name="img" value={formValues.img || ""} onChange={handleFormChange} />
             </div>
 
             <div className="form-group">
@@ -407,8 +624,9 @@ const AdminPage = () => {
               <select
                 id="category"
                 name="category"
-                value={dishForm.category}
-                onChange={(e) => handleInputChange(e, "dishes")}
+                value={formValues.category || ""}
+                onChange={handleFormChange}
+                className={formErrors.category ? "input-error" : ""}
               >
                 <option value="">Selecione uma categoria</option>
                 {categories.map((category) => (
@@ -417,430 +635,255 @@ const AdminPage = () => {
                   </option>
                 ))}
               </select>
+              {formErrors.category && <span className="form-error">{formErrors.category}</span>}
             </div>
-          </div>
 
-          <div className="form-group">
-            <label htmlFor="description">Descrição</label>
-            <textarea
-              id="description"
-              name="description"
-              value={dishForm.description}
-              onChange={(e) => handleInputChange(e, "dishes")}
-              required
-            ></textarea>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="ingredients">Ingredientes</label>
-            <textarea
-              id="ingredients"
-              name="ingredients"
-              value={dishForm.ingredients}
-              onChange={(e) => handleInputChange(e, "dishes")}
-              required
-            ></textarea>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="img">URL da Imagem</label>
-            <input
-              type="url"
-              id="img"
-              name="img"
-              value={dishForm.img}
-              onChange={(e) => handleInputChange(e, "dishes")}
-            />
-          </div>
-
-          <div className="form-actions">
-            <button type="submit" className="btn-primary">
-              {editMode.dishes ? "Atualizar Prato" : "Adicionar Prato"}
-            </button>
-
-            {editMode.dishes && (
-              <button type="button" className="btn-secondary" onClick={() => resetForm("dishes")}>
-                Cancelar
-              </button>
-            )}
-          </div>
-        </form>
-
-        {/* Dishes Table */}
-        <div className="admin-table-container">
-          {isLoading ? (
-            <div className="loading-spinner">
-              <i className="fas fa-spinner fa-spin"></i>
-              <span>Carregando...</span>
-            </div>
-          ) : (
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Categoria</th>
-                  <th>Avaliação</th>
-                  <th>Views</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dishes.length > 0 ? (
-                  dishes.map((dish) => (
-                    <tr key={dish.id}>
-                      <td>{dish.name}</td>
-                      <td>{dish.category}</td>
-                      <td>{dish.rating !== undefined && dish.rating !== null ? dish.rating.toFixed(1) : "N/A"}</td>
-                      <td>{dish.views}</td>
-                      <td className="action-buttons">
-                        <button className="btn-edit" onClick={() => handleEdit(dish, "dishes")}>
-                          <i className="fas fa-edit"></i>
-                        </button>
-                        <button className="btn-delete" onClick={() => handleDelete(dish.id, "dishes")}>
-                          <i className="fas fa-trash"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="5" className="empty-table">
-                      Nenhum prato cadastrado
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  // Render categories tab content
-  const renderCategoriesTab = () => {
-    return (
-      <div className="admin-tab-content">
-        <h2>Gerenciar Categorias</h2>
-
-        {/* Categories Form */}
-        <form className="admin-form" onSubmit={(e) => handleSubmit(e, "categories")}>
-          <div className="form-group">
-            <label htmlFor="category-name">Nome</label>
-            <input
-              type="text"
-              id="category-name"
-              name="name"
-              value={categoryForm.name}
-              onChange={(e) => handleInputChange(e, "categories")}
-              required
-              maxLength={50}
-            />
-            <small className="form-hint">
-              O nome deve ter entre 2 e 50 caracteres. ({categoryForm.name.length}/50)
-            </small>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="category-description">Descrição</label>
-            <textarea
-              id="category-description"
-              name="description"
-              value={categoryForm.description}
-              onChange={(e) => handleInputChange(e, "categories")}
-              maxLength={200}
-            ></textarea>
-            <small className="form-hint">Máximo de 200 caracteres. ({categoryForm.description.length}/200)</small>
-          </div>
-
-          <div className="form-actions">
-            <button type="submit" className="btn-primary">
-              {editMode.categories ? "Atualizar Categoria" : "Adicionar Categoria"}
-            </button>
-
-            {editMode.categories && (
-              <button type="button" className="btn-secondary" onClick={() => resetForm("categories")}>
-                Cancelar
-              </button>
-            )}
-          </div>
-        </form>
-
-        {/* Categories Table */}
-        <div className="admin-table-container">
-          {isLoading ? (
-            <div className="loading-spinner">
-              <i className="fas fa-spinner fa-spin"></i>
-              <span>Carregando...</span>
-            </div>
-          ) : (
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Descrição</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {categories.length > 0 ? (
-                  categories.map((category) => (
-                    <tr key={category.id}>
-                      <td>{category.name}</td>
-                      <td>{category.description}</td>
-                      <td className="action-buttons">
-                        <button className="btn-edit" onClick={() => handleEdit(category, "categories")}>
-                          <i className="fas fa-edit"></i>
-                        </button>
-                        <button className="btn-delete" onClick={() => handleDelete(category.id, "categories")}>
-                          <i className="fas fa-trash"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="3" className="empty-table">
-                      Nenhuma categoria cadastrada
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  // Render users tab content
-  const renderUsersTab = () => {
-    return (
-      <div className="admin-tab-content">
-        <h2>Gerenciar Usuários</h2>
-
-        {/* Users Form */}
-        <form className="admin-form" onSubmit={(e) => handleSubmit(e, "users")}>
-          <div className="form-group">
-            <label htmlFor="user-nome">Nome</label>
-            <input
-              type="text"
-              id="user-nome"
-              name="nome"
-              value={userForm.nome}
-              onChange={(e) => handleInputChange(e, "users")}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="user-login">Login</label>
-            <input
-              type="text"
-              id="user-login"
-              name="login"
-              value={userForm.login}
-              onChange={(e) => handleInputChange(e, "users")}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="user-senha">Senha</label>
-            <input
-              type="password"
-              id="user-senha"
-              name="senha"
-              value={userForm.senha}
-              onChange={(e) => handleInputChange(e, "users")}
-              required
-              disabled={editMode.users} // Disable password field in edit mode
-              className={editMode.users ? "disabled-input" : ""}
-            />
-            {editMode.users && <small className="form-hint">A senha não pode ser alterada durante a edição.</small>}
-          </div>
-
-          <div className="form-actions">
-            <button type="submit" className="btn-primary">
-              {editMode.users ? "Atualizar Usuário" : "Adicionar Usuário"}
-            </button>
-
-            {editMode.users && (
-              <button type="button" className="btn-secondary" onClick={() => resetForm("users")}>
-                Cancelar
-              </button>
-            )}
-          </div>
-        </form>
-
-        {/* Users Table */}
-        <div className="admin-table-container">
-          {isLoading ? (
-            <div className="loading-spinner">
-              <i className="fas fa-spinner fa-spin"></i>
-              <span>Carregando...</span>
-            </div>
-          ) : (
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Login</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.length > 0 ? (
-                  users.map((user) => (
-                    <tr key={user.id}>
-                      <td>{user.nome}</td>
-                      <td>{user.login}</td>
-                      <td className="action-buttons">
-                        <button className="btn-edit" onClick={() => handleEdit(user, "users")}>
-                          <i className="fas fa-edit"></i>
-                        </button>
-                        <button className="btn-delete" onClick={() => handleDelete(user.id, "users")}>
-                          <i className="fas fa-trash"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="3" className="empty-table">
-                      Nenhum usuário cadastrado
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  // Render news tab content
-  const renderNewsTab = () => {
-    return (
-      <div className="admin-tab-content">
-        <h2>Gerenciar Notícias</h2>
-
-        {/* News Form */}
-        <form className="admin-form" onSubmit={(e) => handleSubmit(e, "news")}>
-          <div className="form-group">
-            <label htmlFor="news-title">Título</label>
-            <input
-              type="text"
-              id="news-title"
-              name="title"
-              value={newsForm.title}
-              onChange={(e) => handleInputChange(e, "news")}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="news-subtitle">Subtítulo</label>
-            <input
-              type="text"
-              id="news-subtitle"
-              name="subtitle"
-              value={newsForm.subtitle}
-              onChange={(e) => handleInputChange(e, "news")}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="news-body">Conteúdo</label>
-            <textarea
-              id="news-body"
-              name="body"
-              value={newsForm.body}
-              onChange={(e) => handleInputChange(e, "news")}
-              required
-              rows="6"
-            ></textarea>
-          </div>
-
-          <div className="form-row">
             <div className="form-group">
-              <label htmlFor="news-date">Data de Publicação</label>
+              <label htmlFor="ingredients">Ingredientes</label>
               <input
-                type="date"
-                id="news-date"
-                name="publicationDate"
-                value={newsForm.publicationDate}
-                onChange={(e) => handleInputChange(e, "news")}
-                required
-                disabled={editMode.news} // Disable date field in edit mode
-                className={editMode.news ? "disabled-input" : ""}
+                type="text"
+                id="ingredients"
+                name="ingredients"
+                value={formValues.ingredients || ""}
+                onChange={handleFormChange}
+                className={formErrors.ingredients ? "input-error" : ""}
               />
-              {editMode.news && (
-                <small className="form-hint">A data de publicação não pode ser alterada durante a edição.</small>
-              )}
+              {formErrors.ingredients && <span className="form-error">{formErrors.ingredients}</span>}
             </div>
-          </div>
 
-          <div className="form-actions">
-            <button type="submit" className="btn-primary">
-              {editMode.news ? "Atualizar Notícia" : "Adicionar Notícia"}
-            </button>
-
-            {editMode.news && (
-              <button type="button" className="btn-secondary" onClick={() => resetForm("news")}>
-                Cancelar
-              </button>
-            )}
-          </div>
-        </form>
-
-        {/* News Table */}
-        <div className="admin-table-container">
-          {isLoading ? (
-            <div className="loading-spinner">
-              <i className="fas fa-spinner fa-spin"></i>
-              <span>Carregando...</span>
+            <div className="form-actions">
+              <Button type="submit" text="Salvar" />
+              {isEditing && <Button type="secondary" text="Cancelar" onClick={() => setIsEditing(false)} />}
             </div>
-          ) : (
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Título</th>
-                  <th>Data</th>
-                  <th>Visualizações</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {news.length > 0 ? (
-                  news.map((item) => (
-                    <tr key={item.id}>
+          </form>
+        )
+      case "categories":
+        return (
+          <form className="admin-form" onSubmit={handleFormSubmit}>
+            <div className="form-group">
+              <label htmlFor="category-name">Nome</label>
+              <input
+                type="text"
+                id="category-name"
+                name="name"
+                value={formValues.name || ""}
+                onChange={handleFormChange}
+                className={formErrors.name ? "input-error" : ""}
+              />
+              {formErrors.name && <span className="form-error">{formErrors.name}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="category-description">Descrição</label>
+              <textarea
+                id="category-description"
+                name="description"
+                value={formValues.description || ""}
+                onChange={handleFormChange}
+              />
+            </div>
+
+            <div className="form-actions">
+              <Button type="submit" text="Salvar" />
+              {isEditing && <Button type="secondary" text="Cancelar" onClick={() => setIsEditing(false)} />}
+            </div>
+          </form>
+        )
+      case "news":
+        return (
+          <form className="admin-form" onSubmit={handleFormSubmit}>
+            <div className="form-group">
+              <label htmlFor="news-title">Título</label>
+              <input
+                type="text"
+                id="news-title"
+                name="title"
+                value={formValues.title || ""}
+                onChange={handleFormChange}
+                className={formErrors.title ? "input-error" : ""}
+              />
+              {formErrors.title && <span className="form-error">{formErrors.title}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="news-subtitle">Subtítulo</label>
+              <input
+                type="text"
+                id="news-subtitle"
+                name="subtitle"
+                value={formValues.subtitle || ""}
+                onChange={handleFormChange}
+                className={formErrors.subtitle ? "input-error" : ""}
+              />
+              {formErrors.subtitle && <span className="form-error">{formErrors.subtitle}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="news-body">Corpo da Notícia</label>
+              <textarea
+                id="news-body"
+                name="body"
+                value={formValues.body || ""}
+                onChange={handleFormChange}
+                className={formErrors.body ? "input-error" : ""}
+              />
+              {formErrors.body && <span className="form-error">{formErrors.body}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="news-img">URL da Imagem</label>
+              <input type="text" id="news-img" name="img" value={formValues.img || ""} onChange={handleFormChange} />
+            </div>
+
+            <div className="form-actions">
+              <Button type="submit" text="Salvar" />
+              {isEditing && <Button type="secondary" text="Cancelar" onClick={() => setIsEditing(false)} />}
+            </div>
+          </form>
+        )
+      case "users":
+        return (
+          <form className="admin-form" onSubmit={handleFormSubmit}>
+            <div className="form-group">
+              <label htmlFor="user-nome">Nome</label>
+              <input
+                type="text"
+                id="user-nome"
+                name="nome"
+                value={formValues.nome || ""}
+                onChange={handleFormChange}
+                className={formErrors.nome ? "input-error" : ""}
+              />
+              {formErrors.nome && <span className="form-error">{formErrors.nome}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="user-login">Login</label>
+              <input
+                type="text"
+                id="user-login"
+                name="login"
+                value={formValues.login || ""}
+                onChange={handleFormChange}
+                className={formErrors.login ? "input-error" : ""}
+              />
+              {formErrors.login && <span className="form-error">{formErrors.login}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="user-senha">Senha</label>
+              <input
+                type="password"
+                id="user-senha"
+                name="senha"
+                value={formValues.senha || ""}
+                onChange={handleFormChange}
+                className={formErrors.senha ? "input-error" : ""}
+              />
+              {formErrors.senha && <span className="form-error">{formErrors.senha}</span>}
+            </div>
+
+            <div className="form-actions">
+              <Button type="submit" text="Salvar" />
+              {isEditing && <Button type="secondary" text="Cancelar" onClick={() => setIsEditing(false)} />}
+            </div>
+          </form>
+        )
+      default:
+        return null
+    }
+  }
+
+  // Render table
+  const renderTable = () => {
+    let data = []
+    let columns = []
+    let tabName = ""
+
+    switch (activeTab) {
+      case "dishes":
+        data = dishes
+        columns = ["Nome", "Categoria", "Ingredientes"]
+        tabName = "Pratos"
+        break
+      case "categories":
+        data = categories
+        columns = ["Nome", "Descrição"]
+        tabName = "Categorias"
+        break
+      case "news":
+        data = news
+        columns = ["Título", "Subtítulo", "Data de Publicação"]
+        tabName = "Notícias"
+        break
+      case "users":
+        data = users
+        columns = ["Nome", "Login"]
+        tabName = "Usuários"
+        break
+      default:
+        return null
+    }
+
+    return (
+      <div className="admin-table-container">
+        <h2>Lista de {tabName}</h2>
+        {data.length > 0 ? (
+          <table className="admin-table">
+            <thead>
+              <tr>
+                {columns.map((column) => (
+                  <th key={column}>{column}</th>
+                ))}
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((item) => (
+                <tr key={item.id}>
+                  {activeTab === "dishes" && (
+                    <>
+                      <td>{item.name}</td>
+                      <td>{item.category}</td>
+                      <td>{item.ingredients}</td>
+                    </>
+                  )}
+                  {activeTab === "categories" && (
+                    <>
+                      <td>{item.name}</td>
+                      <td>{item.description}</td>
+                    </>
+                  )}
+                  {activeTab === "news" && (
+                    <>
                       <td>{item.title}</td>
-                      <td>{formatDate(item.publicationDate)}</td>
-                      <td>{item.views}</td>
-                      <td className="action-buttons">
-                        <button className="btn-edit" onClick={() => handleEdit(item, "news")}>
-                          <i className="fas fa-edit"></i>
-                        </button>
-                        <button className="btn-delete" onClick={() => handleDelete(item.id, "news")}>
-                          <i className="fas fa-trash"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="empty-table">
-                      Nenhuma notícia cadastrada
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          )}
-        </div>
+                      <td>{item.subtitle}</td>
+                      <td>{item.publicationDate}</td>
+                    </>
+                  )}
+                  {activeTab === "users" && (
+                    <>
+                      <td>{item.nome}</td>
+                      <td>{item.login}</td>
+                    </>
+                  )}
+                  <td>
+                    <div className="action-buttons">
+                      <button className="btn-edit" onClick={() => handleEditItem(item, activeTab)}>
+                        <i className="fas fa-edit"></i>
+                      </button>
+                      <button className="btn-delete" onClick={() => handleDeleteItem(item.id, activeTab)}>
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="empty-table">Nenhum item cadastrado</div>
+        )}
       </div>
     )
   }
@@ -849,44 +892,71 @@ const AdminPage = () => {
     <div className="admin-page">
       <div className="admin-header">
         <h1>Painel de Administração</h1>
-        <p>Gerencie pratos, categorias, usuários e notícias do Restaurante Universitário</p>
+        <p>Gerencie os dados do aplicativo iLoveRU</p>
       </div>
 
       <div className="admin-container">
-        {/* Admin Tabs */}
         <div className="admin-tabs">
           <button
             className={`admin-tab ${activeTab === "dishes" ? "active" : ""}`}
-            onClick={() => setActiveTab("dishes")}
+            onClick={() => handleTabChange("dishes")}
           >
             <i className="fas fa-utensils"></i> Pratos
           </button>
 
           <button
             className={`admin-tab ${activeTab === "categories" ? "active" : ""}`}
-            onClick={() => setActiveTab("categories")}
+            onClick={() => handleTabChange("categories")}
           >
             <i className="fas fa-tags"></i> Categorias
           </button>
 
           <button
+            className={`admin-tab ${activeTab === "news" ? "active" : ""}`}
+            onClick={() => handleTabChange("news")}
+          >
+            <i className="fas fa-newspaper"></i> Notícias
+          </button>
+
+          <button
             className={`admin-tab ${activeTab === "users" ? "active" : ""}`}
-            onClick={() => setActiveTab("users")}
+            onClick={() => handleTabChange("users")}
           >
             <i className="fas fa-users"></i> Usuários
           </button>
 
-          <button className={`admin-tab ${activeTab === "news" ? "active" : ""}`} onClick={() => setActiveTab("news")}>
-            <i className="fas fa-newspaper"></i> Notícias
+          <button
+            className={`admin-tab ${activeTab === "reports" ? "active" : ""}`}
+            onClick={() => handleTabChange("reports")}
+          >
+            <i className="fas fa-chart-bar"></i> Relatórios
           </button>
         </div>
 
-        {/* Tab Content */}
         <div className="admin-content">
-          {activeTab === "dishes" && renderDishesTab()}
-          {activeTab === "categories" && renderCategoriesTab()}
-          {activeTab === "users" && renderUsersTab()}
-          {activeTab === "news" && renderNewsTab()}
+          {isLoading ? (
+            <div className="loading-spinner">
+              <i className="fas fa-spinner fa-spin"></i>
+              <span>Carregando...</span>
+            </div>
+          ) : activeTab === "reports" ? (
+            renderReportsTab({ activeTab, showAlert })
+          ) : (
+            <>
+              <h2>
+                {isEditing ? "Editar" : "Adicionar"}{" "}
+                {activeTab === "dishes"
+                  ? "Prato"
+                  : activeTab === "categories"
+                    ? "Categoria"
+                    : activeTab === "news"
+                      ? "Notícia"
+                      : "Usuário"}
+              </h2>
+              {renderForm()}
+              {renderTable()}
+            </>
+          )}
         </div>
       </div>
     </div>
