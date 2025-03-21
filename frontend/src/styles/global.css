@@ -1,0 +1,177 @@
+/* Global CSS for iLoveRU application */
+
+/* Import fonts */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+/* CSS Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Global variables */
+:root {
+  --primary-color: #008489;
+  --primary-dark: #006c70;
+  --primary-light: #b2e6e8;
+  --secondary-color: #ff5a5f;
+  --text-color: #484848;
+  --text-light: #767676;
+  --background-color: #f7f7f7;
+  --white: #ffffff;
+  --black: #222222;
+  --gray-light: #ebebeb;
+  --gray: #dddddd;
+  --gray-dark: #888888;
+  --shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 5px 15px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+  --border-radius: 4px;
+  --header-height: 70px;
+}
+
+/* Base styles */
+body {
+  font-family: "Poppins", sans-serif;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  line-height: 1.5;
+  font-size: 16px;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Main content area */
+.main-content {
+  padding-top: var(--header-height);
+  min-height: calc(100vh - var(--header-height));
+}
+
+/* Utility classes */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--primary-color);
+}
+
+.loading-spinner i {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1200px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (max-width: 992px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 540px;
+  }
+
+  :root {
+    --header-height: 60px;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    max-width: 100%;
+    padding: 0 15px;
+  }
+
+  body {
+    font-size: 14px;
+  }
+}
+
+/* Loading app */
+.loading-app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--background-color);
+}
+
+/* Backend warning */
+.backend-warning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 0.5rem;
+  text-align: center;
+  z-index: 2000;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.backend-warning i {
+  font-size: 1rem;
+}
+
+/* Ajuste para quando o aviso de backend estiver visível */
+.backend-warning + .header {
+  top: 2rem;
+}
+
+.backend-warning ~ .main-content {
+  padding-top: calc(var(--header-height) + 2rem);
+}
+
+/* Ajuste para quando o alerta estiver visível */
+.alert-container ~ .main-content {
+  padding-top: calc(var(--header-height) + 60px);
+}
+
+/* Ajuste para quando o alerta e o aviso de backend estiverem visíveis */
+.backend-warning ~ .alert-container ~ .main-content {
+  padding-top: calc(var(--header-height) + 2rem + 60px);
+}
+

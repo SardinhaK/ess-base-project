@@ -1,0 +1,213 @@
+/* FeedPage styles for iLoveRU application */
+
+.feed-page {
+  width: 100%;
+}
+
+/* Search Results Banner */
+.search-results-banner {
+  background-color: #e3f2fd;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+.search-results-banner.error {
+  background-color: #f8d7da;
+}
+
+.search-results-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.search-results-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-results-banner.error .search-results-content h2 {
+  color: #721c24;
+}
+
+.search-results-content p {
+  margin-bottom: 1rem;
+  color: var(--text-light);
+}
+
+.clear-search-button {
+  background-color: var(--white);
+  color: var(--text-color);
+  border: 1px solid var(--gray);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.clear-search-button:hover {
+  background-color: var(--gray-light);
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  height: 350px; /* Reduzido de 500px para 350px */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("../assets/background.webp");
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 2rem;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-content {
+  text-align: center;
+  color: var(--white);
+  padding: 2rem;
+}
+
+.hero-title {
+  font-size: 2.5rem; /* Reduzido de 3rem para 2.5rem */
+  font-weight: 700;
+  margin-bottom: 1.5rem; /* Reduzido de 2rem para 1.5rem */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* Carousel Section */
+.carousel-section-container {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+  padding: 0 1rem;
+}
+
+/* Dishes Grid Section */
+.dishes-grid-section {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+  padding: 0 1rem;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section-header h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+}
+
+.section-header p {
+  font-size: 1rem;
+  color: var(--text-light);
+}
+
+.dishes-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.empty-grid {
+  grid-column: 1 / -1;
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-light);
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+/* Error message */
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: var(--border-radius);
+  margin-bottom: 1rem;
+}
+
+.error-message i {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+  .dishes-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .hero-section {
+    height: 300px; /* Reduzido de 400px para 300px */
+  }
+
+  .hero-title {
+    font-size: 2.2rem; /* Ajustado de 2.5rem para 2.2rem */
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    height: 280px; /* Reduzido de 350px para 280px */
+  }
+
+  .hero-title {
+    font-size: 1.8rem; /* Reduzido de 2rem para 1.8rem */
+  }
+}
+
+@media (max-width: 576px) {
+  .dishes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-section {
+    height: 250px; /* Reduzido de 300px para 250px */
+  }
+
+  .hero-title {
+    font-size: 1.6rem; /* Reduzido de 1.75rem para 1.6rem */
+    margin-bottom: 1.2rem; /* Adicionado para reduzir ainda mais o espaço */
+  }
+}
+
