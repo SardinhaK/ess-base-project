@@ -1,0 +1,234 @@
+/* ReportsPage styles for iLoveRU application */
+
+.reports-container {
+    padding: 1rem;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .stat-card {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: var(--transition);
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+  }
+  
+  .stat-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+  }
+  
+  .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+  }
+  
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--text-light);
+  }
+  
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .chart-card {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+  }
+  
+  .chart-header {
+    margin-bottom: 1rem;
+  }
+  
+  .chart-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+  }
+  
+  .chart-description {
+    font-size: 0.875rem;
+    color: var(--text-light);
+  }
+  
+  .chart-container {
+    height: 300px;
+    position: relative;
+  }
+  
+  .table-card {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+  
+  .table-header {
+    margin-bottom: 1rem;
+  }
+  
+  .table-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+  }
+  
+  .table-description {
+    font-size: 0.875rem;
+    color: var(--text-light);
+  }
+  
+  .reports-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .reports-table th,
+  .reports-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--gray);
+  }
+  
+  .reports-table th {
+    font-weight: 600;
+    color: var(--text-color);
+  }
+  
+  .reports-table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .bar-chart,
+  .pie-chart {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    padding-top: 20px;
+  }
+  
+  .bar {
+    width: 40px;
+    background-color: var(--primary-color);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    transition: height 0.5s ease;
+  }
+  
+  .bar-label {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    color: var(--text-light);
+    white-space: nowrap;
+  }
+  
+  .bar-value {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    color: var(--text-color);
+    font-weight: 500;
+  }
+  
+  .pie-chart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  
+  .pie-segment {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    clip-path: polygon(50% 50%, 100% 0, 100% 100%);
+    transform-origin: center;
+  }
+  
+  .pie-legend {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+  }
+  
+  .legend-label {
+    color: var(--text-color);
+  }
+  
+  .legend-value {
+    color: var(--text-light);
+    margin-left: auto;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 1200px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 992px) {
+    .charts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  
