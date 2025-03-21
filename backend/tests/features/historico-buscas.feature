@@ -9,15 +9,15 @@ Funcionalidade: Histórico e Busca de Pratos
   Contexto:
     Dado que o histórico de buscas está vazio
     E que o sistema possui os seguintes pratos cadastrados:
-      | nome                  | categoria  | nota | visualizacoes | descricao                                                        |
-      | Frango à Parmegiana  | Aves       | 4.2  | 1000         | Filé de frango empanado coberto com molho de tomate e queijo    |
-      | Lasanha de Carne     | Italiana   | 4.5  | 376          | Camadas de massa intercaladas com molho de carne e queijo        |
-      | Salada Caesar        | Saladas    | 4.0  | 500          | Salada clássica com alface, croutons e molho Caesar             |
-      | Sushi Variado        | Japonês    | 4.8  | 253          | Seleção de sushi com peixes frescos e arroz temperado           |
-      | Feijoada            | Brasileira | 4.7  | 250          | Prato tradicional brasileiro com feijão preto e carnes          |
-      | Risoto de Cogumelos | Italiana   | 4.3  | 145          | Risoto cremoso preparado com cogumelos frescos                  |
-      | Tacos de Carne      | Carnes Premium    | 4.1  | 12           | Tortilhas de milho recheadas com carne temperada                |
-      | Bolo de Chocolate   | Sobremesas | 4.6  | 925          | Bolo macio e úmido com cobertura de chocolate                   |
+      | nome                  | categoria         | nota | visualizacoes | descricao                                                        |
+      | Frango à Parmegiana   | Aves              | 4.2  | 1000          | Filé de frango empanado coberto com molho de tomate e queijo     |
+      | Lasanha de Carne      | Italiana          | 4.5  | 376           | Camadas de massa intercaladas com molho de carne e queijo        |
+      | Salada Caesar         | Saladas           | 4.0  | 500           | Salada clássica com alface, croutons e molho Caesar              |
+      | Sushi Variado         | Japonês           | 4.8  | 253           | Seleção de sushi com peixes frescos e arroz temperado            |
+      | Feijoada              | Brasileira        | 4.7  | 250           | Prato tradicional brasileiro com feijão preto e carnes           |
+      | Risoto de Cogumelos   | Italiana          | 4.3  | 145           | Risoto cremoso preparado com cogumelos frescos                   |
+      | Tacos de Carne        | Carnes Premium    | 4.1  | 12            | Tortilhas de milho recheadas com carne temperada                 |
+      | Bolo de Chocolate     | Sobremesas        | 4.6  | 925           | Bolo macio e úmido com cobertura de chocolate                    |
 
 
   # Cenários de Busca Básica
@@ -99,7 +99,7 @@ Funcionalidade: Histórico e Busca de Pratos
   Cenário: Buscar prato inexistente
     Quando o usuário faz uma requisição GET para "/search?name=PratoInexistente"
     Então a resposta deve ser "404"
-    E a mensagem de erro deve ser "Nenhum prato encontrado com esses filtros"
+    E a mensagem de erro será "Nenhum prato encontrado com esses filtros"
     E o histórico de buscas deve conter as seguintes buscas:
       | termo            | filtros |
       | PratoInexistente | {}      |
@@ -107,7 +107,7 @@ Funcionalidade: Histórico e Busca de Pratos
   Cenário: Buscar com nota máxima inválida
     Quando o usuário faz uma requisição GET para "/search?maxNota=6.0"
     Então a resposta deve ser "400"
-    E a mensagem de erro deve ser "Nota máxima deve ser entre 0 e 5"
+    E a mensagem de erro será "Nota máxima deve ser entre 0 e 5"
 
   # Cenários de Histórico
   Cenário: Verificar limite de 100 buscas no histórico
@@ -145,7 +145,7 @@ Funcionalidade: Histórico e Busca de Pratos
       | Lasanha | { "category": "Italiana" } |
     Quando o usuário faz uma requisição DELETE para "/search/historico/999"
     Então a resposta deve ser "400"
-    E a mensagem de erro deve ser "Índice inválido"
+    E a mensagem de erro será "Índice inválido"
 
   Cenário: Visualizar histórico vazio
     Quando o usuário faz uma requisição GET para "/search/historico"

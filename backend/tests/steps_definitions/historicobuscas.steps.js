@@ -1,4 +1,4 @@
-// npx cucumber-js --require tests/steps_definitions tests/features/historico-buscas.feature
+// npx cucumber-js --require tests/steps_definitions/historicobuscas.steps.js tests/features/historico-buscas.feature
 
 const { Given, When, Then } = require('@cucumber/cucumber');
 const request = require('supertest');
@@ -54,7 +54,7 @@ When('o usuário faz uma requisição DELETE para {string}', async function (end
 });
 
 // Steps de Verificação de Resposta
-Then('a resposta deve ser {string}', function (statusCode) {
+Then('a resposta deve ser {string}', function (statusCode) { 
   expect(response.status).to.equal(parseInt(statusCode));
 });
 
@@ -107,7 +107,7 @@ Then('os pratos devem atender a todos os critérios', function () {
   });
 });
 
-Then('a mensagem de erro deve ser {string}', function (mensagem) {
+Then('a mensagem de erro será {string}', function (mensagem) {
   expect(response.body.error).to.equal(mensagem);
 });
 

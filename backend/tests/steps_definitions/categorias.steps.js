@@ -1,4 +1,4 @@
-// npx cucumber-js --require tests/steps_definitions tests/features/categorias.feature
+// npx cucumber-js --require tests/steps_definitions/categorias.steps.js tests/features/categorias.feature
 const { Given, When, Then } = require('@cucumber/cucumber');
 const chai = require('chai');
 const request = require('supertest');
@@ -99,3 +99,6 @@ Then('a categoria deve ter os campos atualizados corretamente', function () {
   expect(response.body.name).to.equal('Carnes Premium');
   expect(response.body.description).to.equal('Carnes nobres');
 });
+
+
+
