@@ -20,5 +20,12 @@
   "dependencies": {
     "chai": "^4.5.0",
     "ess-base-project": "file:"
+  },
+  "devDependencies": {
+    "cucumber-html-reporter": "^7.2.0",
+    "cucumber-pretty": "^6.0.1",
+    "cypress": "^14.2.0",
+    "cypress-cucumber-preprocessor": "^4.3.1",
+    "cypress-xpath": "^2.0.1"
   }
 }
